@@ -1,6 +1,6 @@
 from .types import BoxType, Item, PackedBox, PackedItem, PackingPlan
 from .feasibility import check_feasibility, feasibility_bounds
-from .solver import solve
+from .solver import pack_order, solve
 
 __all__ = [
     "BoxType",
@@ -10,5 +10,6 @@ __all__ = [
     "PackingPlan",
     "check_feasibility",
     "feasibility_bounds",
+    "pack_order",
     "solve",
 ]
