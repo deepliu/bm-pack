@@ -8,7 +8,10 @@ version = "0.1.0"
 description = "Cartonization solver"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+  "py3dbp>=0.4",
+  "matplotlib>=3.7",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
