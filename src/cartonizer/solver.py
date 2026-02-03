@@ -31,8 +31,8 @@ def _expand_items(items: Iterable[Item]) -> list[Item]:
 
 def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> FeasibilityResult:
     total_weight = sum(item.weight * item.qty for item in items)
-    max_weight = max(box_type.max_weight for box_type in box_types)
-    min_weight = min(box_type.min_weight for box_type in box_types)
+    max_weight = max(box_type.max_weight - box_type.tare_weight for box_type in box_types)
+    min_weight = min(max(0.0, box_type.min_weight - box_type.tare_weight) for box_type in box_types)
     b_min, b_max = feasibility_bounds(total_weight, min_weight, max_weight)
     if b_min > b_max:
         reason = (
@@ -72,9 +72,12 @@ def _select_new_box_type(
     candidates: list[BoxType] = []
     item_volume = _volume(item)
     for box_type in box_types:
+        item_capacity = box_type.max_weight - box_type.tare_weight
+        if item_capacity <= 0:
+            continue
         box_volume = box_type.inner_L * box_type.inner_W * box_type.inner_H
         max_volume = box_volume * fill_rate
-        if item.weight > box_type.max_weight:
+        if item.weight > item_capacity:
             continue
         if item_volume > max_volume:
             continue
@@ -149,7 +152,7 @@ def pack_order(
     expanded.sort(key=lambda item: item.weight, reverse=True)
 
     boxes: list[BoxState] = []
-    max_allowed_weight = max(box_type.max_weight for box_type in box_types)
+    max_allowed_weight = max(box_type.max_weight - box_type.tare_weight for box_type in box_types)
     for item in expanded:
         if item.weight > max_allowed_weight:
             return PackingPlan(
@@ -184,11 +187,24 @@ def pack_order(
             * selected_box_type.inner_H
         )
         max_volume = box_volume * fill_rate
+        item_capacity = selected_box_type.max_weight - selected_box_type.tare_weight
+        if item_capacity <= 0:
+            return PackingPlan(
+                status="infeasible",
+                reason=f"infeasible: box {selected_box_type.id} has no capacity after tare",
+                boxes=[],
+                metrics={
+                    "total_weight": total_weight,
+                    "box_count": 0.0,
+                    "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
+                },
+                suggestions=[],
+            )
         remaining_qty = item.qty
 
         while remaining_qty > 0:
             max_by_weight = (
-                int((selected_box_type.max_weight) // item.weight)
+                int(item_capacity // item.weight)
                 if item.weight > 0
                 else remaining_qty
             )
@@ -217,8 +233,9 @@ def pack_order(
                     box_type_id=selected_box_type.id,
                     min_weight=selected_box_type.min_weight,
                     max_weight=selected_box_type.max_weight,
+                    tare_weight=selected_box_type.tare_weight,
                     max_volume=max_volume,
-                    total_weight=item.weight * count,
+                    total_weight=item.weight * count + selected_box_type.tare_weight,
                     total_volume=item_volume * count,
                     items={item.id: count},
                 )

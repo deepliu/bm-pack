@@ -8,6 +8,7 @@ class BoxState:
     box_type_id: str
     min_weight: float
     max_weight: float
+    tare_weight: float
     max_volume: float
     total_weight: float
     total_volume: float
@@ -15,7 +16,8 @@ class BoxState:
 
 
 def _merge_boxes(target: BoxState, source: BoxState) -> None:
-    target.total_weight += source.total_weight
+    # Remove source box tare because boxes are merged into a single box.
+    target.total_weight += source.total_weight - source.tare_weight
     target.total_volume += source.total_volume
     for item_id, qty in source.items.items():
         target.items[item_id] = target.items.get(item_id, 0) + qty
@@ -38,7 +40,9 @@ def _try_merge_underweight(
                     continue
                 if prefer_same_sku and sku_i != set(boxes[j].items.keys()):
                     continue
-                combined_weight = boxes[i].total_weight + boxes[j].total_weight
+                combined_weight = (
+                    boxes[i].total_weight + boxes[j].total_weight - boxes[j].tare_weight
+                )
                 combined_volume = boxes[i].total_volume + boxes[j].total_volume
                 if combined_weight <= boxes[i].max_weight and combined_volume <= boxes[i].max_volume:
                     if combined_weight > best_weight:

@@ -98,7 +98,9 @@ def feasibility_bounds(total_weight: float, min_weight: float, max_weight: float
 
 def check_feasibility(items: list[Item], box_type: BoxType) -> FeasibilityResult:
     total_weight = sum(item.weight * item.qty for item in items)
-    b_min, b_max = feasibility_bounds(total_weight, box_type.min_weight, box_type.max_weight)
+    max_weight = box_type.max_weight - box_type.tare_weight
+    min_weight = max(0.0, box_type.min_weight - box_type.tare_weight)
+    b_min, b_max = feasibility_bounds(total_weight, min_weight, max_weight)
     if b_min > b_max:
         reason = (
             f"infeasible: total_weight={total_weight:.3f}, "
@@ -113,8 +115,8 @@ def check_feasibility(items: list[Item], box_type: BoxType) -> FeasibilityResult
             suggestions=_build_suggestions(
                 items,
                 total_weight=total_weight,
-                min_weight=box_type.min_weight,
-                max_weight=box_type.max_weight,
+                min_weight=min_weight,
+                max_weight=max_weight,
                 b_min=b_min,
                 b_max=b_max,
             ),

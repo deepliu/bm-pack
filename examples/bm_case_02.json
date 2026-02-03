@@ -6,7 +6,8 @@
       "inner_W": 330,
       "inner_H": 300,
       "max_weight": 22.5,
-      "min_weight": 12.0
+      "min_weight": 12.0,
+      "tare_weight": 300
     },
     {
       "id": "B",
@@ -14,7 +15,8 @@
       "inner_W": 450,
       "inner_H": 300,
       "max_weight": 22.5,
-      "min_weight": 12.0
+      "min_weight": 12.0,
+      "tare_weight": 300
     },
     {
       "id": "C",
@@ -22,7 +24,8 @@
       "inner_W": 280,
       "inner_H": 230,
       "max_weight": 22.5,
-      "min_weight": 12.0
+      "min_weight": 12.0,
+      "tare_weight": 300
     },
     {
       "id": "D",
@@ -30,7 +33,8 @@
       "inner_W": 220,
       "inner_H": 200,
       "max_weight": 22.5,
-      "min_weight": 12.0
+      "min_weight": 12.0,
+      "tare_weight": 300
     },
     {
       "id": "E",
@@ -38,7 +42,8 @@
       "inner_W": 220,
       "inner_H": 300,
       "max_weight": 22.5,
-      "min_weight": 12.0
+      "min_weight": 12.0,
+      "tare_weight": 300
     }
   ],
   "items": [
