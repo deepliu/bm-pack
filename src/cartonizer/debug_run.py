@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from .solver import pack_order
-from .types import BoxType, Item
+# if __package__ is None or __package__ == "":
+#     sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from cartonizer.solver import pack_order
+from cartonizer.types import BoxType, Item
 
 
 def _load_payload(path: Path) -> tuple[list[BoxType], list[Item]]:
@@ -82,7 +86,9 @@ def run_batch(
 if __name__ == "__main__":
     # 在 PyCharm 里直接运行这个文件，支持断点调试。
     # 只需要改下面这些变量即可，不走 CLI。
-    inputs = sorted(Path("examples").glob("bm_case_*.json"))
+    # inputs = sorted(Path("examples").glob("bm_case_*.json"))
+    inputs = sorted(Path("examples").glob("bm_case_02.json"))
+    print(inputs)
     run_batch(
         inputs,
         plan_dir=Path("output/plans"),

@@ -44,3 +44,4 @@ class PackingPlan:
     reason: str
     boxes: list[PackedBox]
     metrics: dict[str, float]
+    suggestions: list[dict[str, object]] = field(default_factory=list)

@@ -1,0 +1,64 @@
+{
+  "status": "infeasible",
+  "reason": "infeasible: total_weight=23.070, b_min=2, b_max=1",
+  "boxes": [],
+  "metrics": {
+    "total_weight": 23.07,
+    "box_count": 0.0,
+    "lower_bound_by_weight": 2.0
+  },
+  "suggestions": [
+    {
+      "action": "reduce",
+      "target_total_weight": 22.5,
+      "delta_weight": -0.5700000000000003,
+      "recommended_box_count": 1,
+      "options": [
+        {
+          "item_id": "BM-TVR500G01",
+          "unit_weight": 0.2034,
+          "qty_change": -3,
+          "weight_change": -0.6102
+        },
+        {
+          "item_id": "BM-TNB100G01",
+          "unit_weight": 0.097,
+          "qty_change": -6,
+          "weight_change": -0.5820000000000001
+        },
+        {
+          "item_id": "BM-THD4TG01",
+          "unit_weight": 0.02,
+          "qty_change": -29,
+          "weight_change": -0.58
+        }
+      ]
+    },
+    {
+      "action": "increase",
+      "target_total_weight": 24.0,
+      "delta_weight": 0.9299999999999997,
+      "recommended_box_count": 2,
+      "options": [
+        {
+          "item_id": "BM-TVR500G01",
+          "unit_weight": 0.2034,
+          "qty_change": 5,
+          "weight_change": 1.017
+        },
+        {
+          "item_id": "BM-TNB100G01",
+          "unit_weight": 0.097,
+          "qty_change": 10,
+          "weight_change": 0.97
+        },
+        {
+          "item_id": "BM-THD4TG01",
+          "unit_weight": 0.02,
+          "qty_change": 47,
+          "weight_change": 0.9400000000000001
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "status": "ok",
+  "reason": "",
+  "boxes": [
+    {
+      "box_type_id": "D",
+      "total_weight": 12.204,
+      "items": [
+        {
+          "item_id": "BM-TVR500G01",
+          "qty": 60
+        }
+      ]
+    },
+    {
+      "box_type_id": "D",
+      "total_weight": 14.55,
+      "items": [
+        {
+          "item_id": "BM-TNB100G01",
+          "qty": 150
+        }
+      ]
+    },
+    {
+      "box_type_id": "D",
+      "total_weight": 13.66,
+      "items": [
+        {
+          "item_id": "BM-THD4TG01",
+          "qty": 500
+        },
+        {
+          "item_id": "BM-NLH510G01",
+          "qty": 300
+        },
+        {
+          "item_id": "BM-MZG800G01",
+          "qty": 150
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "total_weight": 40.414,
+    "box_count": 3.0,
+    "lower_bound_by_weight": 2.0
+  }
+}

@@ -4,7 +4,7 @@ from math import ceil
 from pathlib import Path
 from typing import Iterable
 
-from .feasibility import FeasibilityResult, feasibility_bounds
+from .feasibility import FeasibilityResult, _build_suggestions, feasibility_bounds
 from .geometry import geometry_validate
 from .repair import BoxState, repair_underweight
 from .types import BoxType, Item, PackedBox, PackedItem, PackingPlan
@@ -45,6 +45,14 @@ def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> Feasibi
             b_min=b_min,
             b_max=b_max,
             reason=reason,
+            suggestions=_build_suggestions(
+                items,
+                total_weight=total_weight,
+                min_weight=min_weight,
+                max_weight=max_weight,
+                b_min=b_min,
+                b_max=b_max,
+            ),
         )
     return FeasibilityResult(
         ok=True,
@@ -52,6 +60,7 @@ def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> Feasibi
         b_min=b_min,
         b_max=b_max,
         reason="",
+        suggestions=[],
     )
 
 
@@ -99,6 +108,7 @@ def pack_order(
                 "box_count": 0.0,
                 "lower_bound_by_weight": 0.0,
             },
+            suggestions=[],
         )
 
     feasibility = _compute_feasibility(items, box_types)
@@ -115,6 +125,7 @@ def pack_order(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
             },
+            suggestions=feasibility.suggestions,
         )
 
     if fill_rate <= 0:
@@ -129,6 +140,7 @@ def pack_order(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
             },
+            suggestions=[],
         )
 
     item_weights = {item.id: item.weight for item in items}
@@ -149,6 +161,7 @@ def pack_order(
                     "box_count": 0.0,
                     "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
                 },
+                suggestions=[],
             )
         selected_box_type = _select_new_box_type(item, box_types, fill_rate)
         if selected_box_type is None:
@@ -161,6 +174,7 @@ def pack_order(
                     "box_count": 0.0,
                     "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
                 },
+                suggestions=[],
             )
 
         item_volume = _volume(item)
@@ -196,6 +210,7 @@ def pack_order(
                         "box_count": 0.0,
                         "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
                     },
+                    suggestions=[],
                 )
             boxes.append(
                 BoxState(
@@ -231,6 +246,7 @@ def pack_order(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
             },
+            suggestions=[],
         )
 
     packed_boxes: list[PackedBox] = []
@@ -267,6 +283,7 @@ def pack_order(
                             ceil(total_weight / max(bt.max_weight for bt in box_types))
                         ),
                     },
+                    suggestions=[],
                 )
 
         packed_boxes.append(
@@ -288,6 +305,7 @@ def pack_order(
                 ceil(total_weight / max(bt.max_weight for bt in box_types))
             ),
         },
+        suggestions=[],
     )
 
 

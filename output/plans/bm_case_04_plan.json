@@ -1,0 +1,10 @@
+{
+  "status": "infeasible",
+  "reason": "infeasible: underweight boxes remain after repair",
+  "boxes": [],
+  "metrics": {
+    "total_weight": 24.555999999999997,
+    "box_count": 0.0,
+    "lower_bound_by_weight": 2.0
+  }
+}
