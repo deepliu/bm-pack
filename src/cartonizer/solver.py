@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from math import ceil
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, List, Optional, Union
 
 from .feasibility import FeasibilityResult, _build_suggestions, feasibility_bounds
 from .geometry import geometry_validate
@@ -66,9 +66,9 @@ def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> Feasibi
 
 def _select_new_box_type(
     item: Item,
-    box_types: list[BoxType],
+    box_types: List[BoxType],
     fill_rate: float,
-) -> BoxType | None:
+) -> Optional[BoxType]:
     candidates: list[BoxType] = []
     item_volume = _volume(item)
     for box_type in box_types:
@@ -91,11 +91,11 @@ def _select_new_box_type(
 
 def pack_order(
     items: list[Item],
-    box_type: BoxType | list[BoxType],
+    box_type: Union[BoxType, List[BoxType]],
     *,
     fill_rate: float = 0.90,
     geometry_check: bool = False,
-    geometry_visualize_dir: str | None = None,
+    geometry_visualize_dir: Optional[str] = None,
 ) -> PackingPlan:
     box_types = box_type if isinstance(box_type, list) else [box_type]
     if not box_types:
@@ -311,11 +311,11 @@ def pack_order(
 
 def solve(
     items: list[Item],
-    box_type: BoxType | list[BoxType],
+    box_type: Union[BoxType, List[BoxType]],
     *,
     fill_rate: float = 0.90,
     geometry_check: bool = False,
-    geometry_visualize_dir: str | None = None,
+    geometry_visualize_dir: Optional[str] = None,
 ) -> PackingPlan:
     return pack_order(
         items,

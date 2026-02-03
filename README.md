@@ -24,7 +24,7 @@ pytest -q
 
 # 运行示例
 python -m cartonizer.cli --input examples/order.json
-可行性验证
+# 可行性验证
 python -m cartonizer.cli --input examples/bm_data.json --geometry-check --geometry-viz-dir output
 ```
 
@@ -32,6 +32,28 @@ python -m cartonizer.cli --input examples/bm_data.json --geometry-check --geomet
 - `--input`: 输入 JSON 路径（必填）。
 - `--geometry-check`: 对每个箱执行 3D 几何校验（需要安装 `py3dbp`）。
 - `--geometry-viz-dir`: 输出几何可视化文件的目录（可选）。
+
+## 打包与发布（PyPI）
+
+### 1) 构建本地包
+```powershell
+python -m build
+```
+
+### 2) 上传到 PyPI
+为避免在命令行或文档中泄露 Token，推荐使用环境变量：
+```powershell
+$env:TWINE_USERNAME="__token__"
+$env:TWINE_PASSWORD="<你的PyPI Token>"
+python -m twine upload dist/*
+```
+
+如需上传到 TestPyPI：
+```powershell
+$env:TWINE_USERNAME="__token__"
+$env:TWINE_PASSWORD="<你的TestPyPI Token>"
+python -m twine upload --repository testpypi dist/*
+```
 
 ## 分箱思路（详细版）
 

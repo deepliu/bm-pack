@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -12,7 +13,7 @@ class BoxType:
     max_weight: float = 22.5
     min_weight: float = 12.0
     tare_weight: float = 0.0
-    cost: float | None = None
+    cost: Optional[float] = None
 
 
 @dataclass(frozen=True)

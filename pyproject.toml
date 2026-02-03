@@ -3,18 +3,34 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cartonizer"
+name = "bm-cartonizer"
 version = "0.1.0"
-description = "Cartonization solver"
+description = "bm产品装箱（重量合规、SKU 优先）"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{name = "jason", email = "877362946@qq.com"}]
 dependencies = [
   "py3dbp>=0.4",
   "matplotlib>=3.7",
 ]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "build>=1.2", "twine>=5.0"]
+
+[project.urls]
+Homepage = "https://github.com/deepliu/bm-pack"
+Repository = "https://github.com/deepliu/bm-pack.git"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

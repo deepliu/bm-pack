@@ -4,7 +4,7 @@ import json
 import sys
 from dataclasses import asdict
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 
 # if __package__ is None or __package__ == "":
 #     sys.path.append(str(Path(__file__).resolve().parents[1]))
@@ -61,7 +61,7 @@ def run_batch(
     inputs: Iterable[Path],
     *,
     plan_dir: Path,
-    viz_dir: Path | None = None,
+    viz_dir: Optional[Path] = None,
     geometry_check: bool = False,
 ) -> None:
     plan_dir.mkdir(parents=True, exist_ok=True)

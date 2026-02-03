@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 
 from .types import BoxType, PackedBox, PackedItem, Item
 
@@ -163,7 +163,7 @@ def geometry_validate(
     box_type: BoxType,
     items_by_id: dict[str, Item],
     *,
-    visualize_path: str | None = None,
+    visualize_path: Optional[str] = None,
 ) -> GeometryResult:
     Bin, ItemCls, Packer, Painter = _import_py3dbp()
 
