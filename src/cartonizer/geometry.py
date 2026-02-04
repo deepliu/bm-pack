@@ -102,6 +102,8 @@ def _save_figure(fig: Any, output_path: Path) -> None:
 
 
 def _plot_matplotlib(bin_obj: Any, output_path: Path) -> None:
+    import matplotlib
+    matplotlib.use("Agg", force=True)
     from matplotlib import pyplot as plt
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 

@@ -90,6 +90,45 @@ def _build_suggestions(
     return suggestions
 
 
+def _build_delta_suggestions(
+    items: list[Item],
+    *,
+    delta: float,
+    action: str,
+    recommended_box_count: int,
+    max_options: int = 3,
+) -> list[dict[str, object]]:
+    if delta <= 0 or not items:
+        return []
+
+    options = []
+    for item in items:
+        if item.weight <= 0:
+            continue
+        qty = int(ceil(delta / item.weight))
+        weight_change = qty * item.weight
+        if action == "reduce":
+            qty = -qty
+            weight_change = -weight_change
+        options.append(
+            {
+                "item_id": item.id,
+                "unit_weight": item.weight,
+                "qty_change": qty,
+                "weight_change": weight_change,
+            }
+        )
+    options.sort(key=lambda o: abs(int(o["qty_change"])))
+    return [
+        {
+            "action": action,
+            "delta_weight": delta if action == "increase" else -delta,
+            "recommended_box_count": recommended_box_count,
+            "options": options[:max_options],
+        }
+    ]
+
+
 def feasibility_bounds(total_weight: float, min_weight: float, max_weight: float) -> tuple[int, int]:
     b_min = int(ceil(total_weight / max_weight)) if max_weight > 0 else 0
     b_max = int(floor(total_weight / min_weight)) if min_weight > 0 else 0

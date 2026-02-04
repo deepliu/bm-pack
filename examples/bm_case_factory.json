@@ -1,0 +1,110 @@
+{
+  "box_types": [
+    {
+      "id": "A",
+      "inner_L": 520,
+      "inner_W": 330,
+      "inner_H": 300,
+      "max_weight": 22.5,
+      "min_weight": 12.0
+    },
+    {
+      "id": "B",
+      "inner_L": 520,
+      "inner_W": 450,
+      "inner_H": 300,
+      "max_weight": 22.5,
+      "min_weight": 12.0
+    },
+    {
+      "id": "C",
+      "inner_L": 420,
+      "inner_W": 280,
+      "inner_H": 230,
+      "max_weight": 22.5,
+      "min_weight": 12.0
+    },
+    {
+      "id": "D",
+      "inner_L": 300,
+      "inner_W": 220,
+      "inner_H": 200,
+      "max_weight": 22.5,
+      "min_weight": 12.0
+    },
+    {
+      "id": "E",
+      "inner_L": 520,
+      "inner_W": 220,
+      "inner_H": 300,
+      "max_weight": 22.5,
+      "min_weight": 12.0
+    }
+  ],
+  "items": [
+    {
+      "id": "BM-DJG300G01",
+      "L": 122.7,
+      "W": 42.3,
+      "H": 14.6,
+      "weight": 0.18619999999999998,
+      "qty": 30
+    },
+    {
+      "id": "BM-LQS200G01",
+      "L": 47.6,
+      "W": 44.8,
+      "H": 10.1,
+      "weight": 0.0535,
+      "qty": 50
+    },
+    {
+      "id": "BM-EWV220G01",
+      "L": 141.7,
+      "W": 40.2,
+      "H": 27.2,
+      "weight": 0.199,
+      "qty": 50
+    },
+    {
+      "id": "BM-DJM100G01",
+      "L": 66.1,
+      "W": 19.6,
+      "H": 19.6,
+      "weight": 0.0581,
+      "qty": 50
+    },
+    {
+      "id": "BM-MTL686G01_5P",
+      "L": 37.1,
+      "W": 19.8,
+      "H": 3.9,
+      "weight": 0.05,
+      "qty": 50
+    },
+    {
+      "id": "BM-DSG990G01",
+      "L": 50.4,
+      "W": 36.9,
+      "H": 20.1,
+      "weight": 0.1388,
+      "qty": 100
+    },
+    {
+      "id": "BM-TRP850G01",
+      "L": 119.0,
+      "W": 100.0,
+      "H": 9.5,
+      "weight": 0.267,
+      "qty": 40
+    },
+    {
+      "id": "BM-AKS200G01",
+      "L": 66.5,
+      "W": 18.8,
+      "H": 18.0,
+      "weight": 0.1021,
+      "qty": 20
+    }
+  ]
+}

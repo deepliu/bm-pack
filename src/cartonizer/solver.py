@@ -4,7 +4,12 @@ from math import ceil
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
-from .feasibility import FeasibilityResult, _build_suggestions, feasibility_bounds
+from .feasibility import (
+    FeasibilityResult,
+    _build_delta_suggestions,
+    _build_suggestions,
+    feasibility_bounds,
+)
 from .geometry import geometry_validate
 from .repair import BoxState, repair_underweight
 from .types import BoxType, Item, PackedBox, PackedItem, PackingPlan
@@ -252,6 +257,28 @@ def pack_order(
         box.total_weight < box.min_weight or box.total_weight > box.max_weight
         for box in boxes
     ):
+        deficit = sum(
+            max(0.0, box.min_weight - box.total_weight)
+            for box in boxes
+            if box.total_weight < box.min_weight
+        )
+        max_weight = max(bt.max_weight - bt.tare_weight for bt in box_types)
+        min_weight = min(max(0.0, bt.min_weight - bt.tare_weight) for bt in box_types)
+        if max_weight <= 0 or min_weight <= 0:
+            reduce_suggestions = []
+        else:
+            b_max = int(total_weight // min_weight)
+            if b_max >= 1:
+                target = max_weight * b_max
+                reduce_delta = max(0.0, total_weight - target)
+            else:
+                reduce_delta = 0.0
+            reduce_suggestions = _build_delta_suggestions(
+                items,
+                delta=reduce_delta,
+                action="reduce",
+                recommended_box_count=b_max,
+            )
         return PackingPlan(
             status="infeasible",
             reason="infeasible: underweight boxes remain after repair",
@@ -263,7 +290,13 @@ def pack_order(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
             },
-            suggestions=[],
+            suggestions=_build_delta_suggestions(
+                items,
+                delta=deficit,
+                action="increase",
+                recommended_box_count=len(boxes),
+            )
+            + reduce_suggestions,
         )
 
     packed_boxes: list[PackedBox] = []
