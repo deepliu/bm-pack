@@ -9,6 +9,7 @@ class BoxState:
     min_weight: float
     max_weight: float
     tare_weight: float
+    box_volume: float
     max_volume: float
     total_weight: float
     total_volume: float

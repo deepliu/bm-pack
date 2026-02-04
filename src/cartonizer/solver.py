@@ -30,7 +30,17 @@ def _expand_items(items: Iterable[Item]) -> list[Item]:
     for item in items:
         if item.qty <= 0:
             continue
-        expanded.append(item)
+        expanded.extend(
+            Item(
+                id=item.id,
+                L=item.L,
+                W=item.W,
+                H=item.H,
+                weight=item.weight,
+                qty=1,
+            )
+            for _ in range(item.qty)
+        )
     return expanded
 
 
@@ -73,6 +83,7 @@ def _select_new_box_type(
     item: Item,
     box_types: List[BoxType],
     fill_rate: float,
+    utilization_target: float,
 ) -> Optional[BoxType]:
     candidates: list[BoxType] = []
     item_volume = _volume(item)
@@ -91,9 +102,13 @@ def _select_new_box_type(
         candidates.append(box_type)
     if not candidates:
         return None
-    candidates.sort(
-        key=lambda bt: (-bt.max_weight, bt.inner_L * bt.inner_W * bt.inner_H)
-    )
+    def _score(bt: BoxType) -> tuple[float, float]:
+        box_volume = bt.inner_L * bt.inner_W * bt.inner_H
+        util = item_volume / box_volume if box_volume > 0 else 0.0
+        util_penalty = 0.0 if util >= utilization_target else (utilization_target - util)
+        return (util_penalty, box_volume)
+
+    candidates.sort(key=_score)
     return candidates[0]
 
 
@@ -102,6 +117,7 @@ def pack_order(
     box_type: Union[BoxType, List[BoxType]],
     *,
     fill_rate: float = 0.90,
+    utilization_target: float = 0.80,
     geometry_check: bool = False,
     geometry_visualize_dir: Optional[str] = None,
 ) -> PackingPlan:
@@ -154,7 +170,7 @@ def pack_order(
     item_weights = {item.id: item.weight for item in items}
     item_volumes = {item.id: _volume(item) for item in items}
     expanded = _expand_items(items)
-    expanded.sort(key=lambda item: item.weight, reverse=True)
+    expanded.sort(key=lambda item: (_volume(item), item.weight), reverse=True)
 
     boxes: list[BoxState] = []
     max_allowed_weight = max(box_type.max_weight - box_type.tare_weight for box_type in box_types)
@@ -171,60 +187,69 @@ def pack_order(
                 },
                 suggestions=[],
             )
-        selected_box_type = _select_new_box_type(item, box_types, fill_rate)
-        if selected_box_type is None:
-            return PackingPlan(
-                status="infeasible",
-                reason=f"infeasible: item {item.id} oversize",
-                boxes=[],
-                metrics={
-                    "total_weight": total_weight,
-                    "box_count": 0.0,
-                    "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
-                },
-                suggestions=[],
-            )
-
         item_volume = _volume(item)
-        box_volume = (
-            selected_box_type.inner_L
-            * selected_box_type.inner_W
-            * selected_box_type.inner_H
-        )
-        max_volume = box_volume * fill_rate
-        item_capacity = selected_box_type.max_weight - selected_box_type.tare_weight
-        if item_capacity <= 0:
-            return PackingPlan(
-                status="infeasible",
-                reason=f"infeasible: box {selected_box_type.id} has no capacity after tare",
-                boxes=[],
-                metrics={
-                    "total_weight": total_weight,
-                    "box_count": 0.0,
-                    "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
-                },
-                suggestions=[],
-            )
-        remaining_qty = item.qty
+        best_idx = None
+        best_score = None
+        best_util = None
+        for idx, box in enumerate(boxes):
+            new_weight = box.total_weight + item.weight
+            new_volume = box.total_volume + item_volume
+            if new_weight > box.max_weight:
+                continue
+            if new_volume > box.max_volume:
+                continue
+            util = new_volume / box.box_volume if box.box_volume > 0 else 0.0
+            util_penalty = 0.0 if util >= utilization_target else (utilization_target - util)
+            sku_penalty = 0.0
+            if box.items and item.id not in box.items:
+                sku_penalty = 0.1
+            score = (util_penalty * 10.0) + sku_penalty
+            if best_score is None or score < best_score or (
+                score == best_score and (best_util is None or util > best_util)
+            ):
+                best_score = score
+                best_idx = idx
+                best_util = util
 
-        while remaining_qty > 0:
-            max_by_weight = (
-                int(item_capacity // item.weight)
-                if item.weight > 0
-                else remaining_qty
+        if best_idx is None:
+            selected_box_type = _select_new_box_type(
+                item, box_types, fill_rate, utilization_target
             )
-            max_by_volume = (
-                int(max_volume // item_volume)
-                if item_volume > 0
-                else remaining_qty
-            )
-            max_by_weight = max(max_by_weight, 0)
-            max_by_volume = max(max_by_volume, 0)
-            count = min(remaining_qty, max_by_weight, max_by_volume)
-            if count <= 0:
+            if selected_box_type is None:
                 return PackingPlan(
                     status="infeasible",
-                    reason=f"infeasible: item {item.id} cannot fit by weight/volume",
+                    reason=f"infeasible: item {item.id} oversize",
+                    boxes=[],
+                    metrics={
+                        "total_weight": total_weight,
+                        "box_count": 0.0,
+                        "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
+                    },
+                    suggestions=[],
+                )
+            box_volume = (
+                selected_box_type.inner_L
+                * selected_box_type.inner_W
+                * selected_box_type.inner_H
+            )
+            max_volume = box_volume * fill_rate
+            item_capacity = selected_box_type.max_weight - selected_box_type.tare_weight
+            if item_capacity <= 0:
+                return PackingPlan(
+                    status="infeasible",
+                    reason=f"infeasible: box {selected_box_type.id} has no capacity after tare",
+                    boxes=[],
+                    metrics={
+                        "total_weight": total_weight,
+                        "box_count": 0.0,
+                        "lower_bound_by_weight": float(ceil(total_weight / max_allowed_weight)),
+                    },
+                    suggestions=[],
+                )
+            if item_volume > max_volume:
+                return PackingPlan(
+                    status="infeasible",
+                    reason=f"infeasible: item {item.id} cannot fit by volume",
                     boxes=[],
                     metrics={
                         "total_weight": total_weight,
@@ -239,13 +264,18 @@ def pack_order(
                     min_weight=selected_box_type.min_weight,
                     max_weight=selected_box_type.max_weight,
                     tare_weight=selected_box_type.tare_weight,
+                    box_volume=box_volume,
                     max_volume=max_volume,
-                    total_weight=item.weight * count + selected_box_type.tare_weight,
-                    total_volume=item_volume * count,
-                    items={item.id: count},
+                    total_weight=item.weight + selected_box_type.tare_weight,
+                    total_volume=item_volume,
+                    items={item.id: 1},
                 )
             )
-            remaining_qty -= count
+        else:
+            box = boxes[best_idx]
+            box.total_weight += item.weight
+            box.total_volume += item_volume
+            box.items[item.id] = box.items.get(item.id, 0) + 1
 
     boxes = repair_underweight(
         boxes,
@@ -364,6 +394,7 @@ def solve(
     box_type: Union[BoxType, List[BoxType]],
     *,
     fill_rate: float = 0.90,
+    utilization_target: float = 0.80,
     geometry_check: bool = False,
     geometry_visualize_dir: Optional[str] = None,
 ) -> PackingPlan:
@@ -371,6 +402,7 @@ def solve(
         items,
         box_type,
         fill_rate=fill_rate,
+        utilization_target=utilization_target,
         geometry_check=geometry_check,
         geometry_visualize_dir=geometry_visualize_dir,
     )

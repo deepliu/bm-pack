@@ -88,6 +88,7 @@ if __name__ == "__main__":
     # 只需要改下面这些变量即可，不走 CLI。
     # inputs = sorted(Path("examples").glob("bm_case_*.json"))
     inputs = sorted(Path("examples").glob("bm_case_factory.json"))
+    inputs = sorted(Path("examples").glob("bm_case_factory.json"))
     print(inputs)
     run_batch(
         inputs,
