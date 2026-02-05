@@ -5,7 +5,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from .solver import pack_order
+from .solver import solve
 from .types import BoxType, Item, PackingPlan
 
 
@@ -72,7 +72,7 @@ def main() -> int:
     print(args)
     payload = json.loads(Path(args.input).read_text(encoding="utf-8"))
     box_types, items = _parse_input(payload)
-    plan = pack_order(
+    plan = solve(
         items,
         box_types,
         geometry_check=args.geometry_check,

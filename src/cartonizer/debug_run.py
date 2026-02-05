@@ -9,7 +9,7 @@ from typing import Iterable, Optional
 # if __package__ is None or __package__ == "":
 #     sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from cartonizer.solver import pack_order
+from cartonizer.solver import solve
 from cartonizer.types import BoxType, Item
 
 
@@ -70,7 +70,7 @@ def run_batch(
 
     for input_path in inputs:
         box_types, items = _load_payload(input_path)
-        plan = pack_order(
+        plan = solve(
             items,
             box_types,
             geometry_check=geometry_check,
@@ -87,8 +87,11 @@ if __name__ == "__main__":
     # 在 PyCharm 里直接运行这个文件，支持断点调试。
     # 只需要改下面这些变量即可，不走 CLI。
     # inputs = sorted(Path("examples").glob("bm_case_*.json"))
-    inputs = sorted(Path("examples").glob("bm_case_factory.json"))
-    inputs = sorted(Path("examples").glob("bm_case_factory.json"))
+    # inputs = sorted(Path("examples").glob("bm_data.json"))
+    # inputs = sorted(Path("examples").glob("bm_case_factory.json"))
+    # inputs = sorted(Path("examples").glob("bm_case_goods_list.json"))
+    inputs = sorted(Path("examples").glob("bm_case_goods_list_1.json"))
+
     print(inputs)
     run_batch(
         inputs,
