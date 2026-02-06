@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -26,6 +27,7 @@ def _merge_boxes(target: BoxState, source: BoxState) -> None:
 
 def _try_merge_underweight(
     boxes: list[BoxState],
+    max_sku_types: Optional[int],
 ) -> bool:
     under_indices = [i for i, box in enumerate(boxes) if box.total_weight < box.min_weight]
     if len(under_indices) < 2:
@@ -41,6 +43,10 @@ def _try_merge_underweight(
                     continue
                 if prefer_same_sku and sku_i != set(boxes[j].items.keys()):
                     continue
+                if max_sku_types is not None:
+                    combined_skus = sku_i | set(boxes[j].items.keys())
+                    if len(combined_skus) > max_sku_types:
+                        continue
                 combined_weight = (
                     boxes[i].total_weight + boxes[j].total_weight - boxes[j].tare_weight
                 )
@@ -66,6 +72,7 @@ def _try_move_from_heavy(
     boxes: list[BoxState],
     item_weights: dict[str, float],
     item_volumes: dict[str, float],
+    max_sku_types: Optional[int],
 ) -> bool:
     under_indices = [i for i, box in enumerate(boxes) if box.total_weight < box.min_weight]
     if not under_indices:
@@ -90,6 +97,11 @@ def _try_move_from_heavy(
                         continue
                     if donor_box.items.get(item_id, 0) <= 0:
                         continue
+                    if max_sku_types is not None:
+                        new_skus = set(under_box.items.keys())
+                        new_skus.add(item_id)
+                        if len(new_skus) > max_sku_types:
+                            continue
                     weight = item_weights[item_id]
                     volume = item_volumes[item_id]
                     if under_box.total_weight + weight > under_box.max_weight:
@@ -122,6 +134,7 @@ def _try_swap(
     boxes: list[BoxState],
     item_weights: dict[str, float],
     item_volumes: dict[str, float],
+    max_sku_types: Optional[int],
 ) -> bool:
     under_indices = [i for i, box in enumerate(boxes) if box.total_weight < box.min_weight]
     if not under_indices:
@@ -158,6 +171,19 @@ def _try_swap(
                         new_donor_volume = donor_box.total_volume - v_d + v_u
                         if new_under_volume > under_box.max_volume or new_donor_volume > donor_box.max_volume:
                             continue
+                        if max_sku_types is not None:
+                            under_items = dict(under_box.items)
+                            donor_items = dict(donor_box.items)
+                            under_items[under_item_id] = under_items.get(under_item_id, 0) - 1
+                            donor_items[donor_item_id] = donor_items.get(donor_item_id, 0) - 1
+                            if under_items[under_item_id] <= 0:
+                                under_items.pop(under_item_id, None)
+                            if donor_items[donor_item_id] <= 0:
+                                donor_items.pop(donor_item_id, None)
+                            under_items[donor_item_id] = under_items.get(donor_item_id, 0) + 1
+                            donor_items[under_item_id] = donor_items.get(under_item_id, 0) + 1
+                            if len(under_items) > max_sku_types or len(donor_items) > max_sku_types:
+                                continue
 
                         under_box.items[under_item_id] -= 1
                         if under_box.items[under_item_id] == 0:
@@ -187,6 +213,7 @@ def repair_underweight(
     boxes: list[BoxState],
     item_weights: dict[str, float],
     item_volumes: dict[str, float],
+    max_sku_types: Optional[int] = None,
 ) -> list[BoxState]:
     if not boxes:
         return boxes
@@ -196,18 +223,20 @@ def repair_underweight(
         under = [box for box in boxes if box.total_weight < box.min_weight]
         if not under:
             break
-        if _try_merge_underweight(boxes):
+        if _try_merge_underweight(boxes, max_sku_types):
             continue
         if _try_move_from_heavy(
             boxes,
             item_weights,
             item_volumes,
+            max_sku_types,
         ):
             continue
         if _try_swap(
             boxes,
             item_weights,
             item_volumes,
+            max_sku_types,
         ):
             continue
         break

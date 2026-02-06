@@ -90,7 +90,8 @@ if __name__ == "__main__":
     # inputs = sorted(Path("examples").glob("bm_data.json"))
     # inputs = sorted(Path("examples").glob("bm_case_factory.json"))
     # inputs = sorted(Path("examples").glob("bm_case_goods_list.json"))
-    inputs = sorted(Path("examples").glob("bm_case_goods_list_1.json"))
+    # inputs = sorted(Path("examples").glob("bm_case_goods_list_1.json"))
+    inputs = sorted(Path("examples").glob("bm_case_goods_list_3.json"))
 
     print(inputs)
     run_batch(

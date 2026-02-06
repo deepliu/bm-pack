@@ -69,7 +69,6 @@ def main() -> int:
         help="Output directory for geometry visualization files",
     )
     args = parser.parse_args()
-    print(args)
     payload = json.loads(Path(args.input).read_text(encoding="utf-8"))
     box_types, items = _parse_input(payload)
     plan = solve(
