@@ -1,64 +1,78 @@
 {
-  "status": "infeasible",
-  "reason": "infeasible: total_weight=23.070, b_min=2, b_max=1",
-  "boxes": [],
-  "metrics": {
-    "total_weight": 23.07,
-    "box_count": 0.0,
-    "lower_bound_by_weight": 2.0
-  },
-  "suggestions": [
+  "status": "ok",
+  "reason": "",
+  "boxes": [
     {
-      "action": "reduce",
-      "target_total_weight": 22.5,
-      "delta_weight": -0.5700000000000003,
-      "recommended_box_count": 1,
-      "options": [
+      "box_type_id": "D",
+      "total_weight": 22.451999999999998,
+      "items": [
         {
-          "item_id": "BM-TVR500G01",
-          "unit_weight": 0.2034,
-          "qty_change": -3,
-          "weight_change": -0.6102
+          "item_id": "X004I67YYN",
+          "qty": 100
         },
         {
-          "item_id": "BM-TNB100G01",
-          "unit_weight": 0.097,
-          "qty_change": -6,
-          "weight_change": -0.5820000000000001
-        },
-        {
-          "item_id": "BM-THD4TG01",
-          "unit_weight": 0.02,
-          "qty_change": -29,
-          "weight_change": -0.58
+          "item_id": "X004HY08Z3",
+          "qty": 8
         }
       ]
     },
     {
-      "action": "increase",
-      "target_total_weight": 24.0,
-      "delta_weight": 0.9299999999999997,
-      "recommended_box_count": 2,
-      "options": [
+      "box_type_id": "D",
+      "total_weight": 15.439,
+      "items": [
         {
-          "item_id": "BM-TVR500G01",
-          "unit_weight": 0.2034,
-          "qty_change": 5,
-          "weight_change": 1.017
+          "item_id": "X004HY08Z3",
+          "qty": 76
         },
         {
-          "item_id": "BM-TNB100G01",
-          "unit_weight": 0.097,
-          "qty_change": 10,
-          "weight_change": 0.97
+          "item_id": "X004KDKU7R",
+          "qty": 30
+        }
+      ]
+    },
+    {
+      "box_type_id": "D",
+      "total_weight": 13.1095,
+      "items": [
+        {
+          "item_id": "X004HY08Z3",
+          "qty": 16
         },
         {
-          "item_id": "BM-THD4TG01",
-          "unit_weight": 0.02,
-          "qty_change": 47,
-          "weight_change": 0.9400000000000001
+          "item_id": "X004R2MYST",
+          "qty": 65
+        }
+      ]
+    },
+    {
+      "box_type_id": "D",
+      "total_weight": 17.0045,
+      "items": [
+        {
+          "item_id": "X004R2MYST",
+          "qty": 35
+        },
+        {
+          "item_id": "X004I5YI43",
+          "qty": 50
+        },
+        {
+          "item_id": "X004KDKU7R",
+          "qty": 20
         }
       ]
     }
-  ]
+  ],
+  "metrics": {
+    "total_weight": 68.00500000000001,
+    "box_count": 4.0,
+    "lower_bound_by_weight": 4.0,
+    "utilization_target": 0.8,
+    "fill_rate": 0.9,
+    "target_box_count": 4.0,
+    "max_sku_types": 0.0,
+    "sku_limit_relaxed": 1.0,
+    "stage": 1.0
+  },
+  "suggestions": []
 }

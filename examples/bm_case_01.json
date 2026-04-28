@@ -1,86 +1,96 @@
 {
-  "box_types": [
-    {
-      "id": "A",
-      "inner_L": 520,
-      "inner_W": 330,
-      "inner_H": 300,
-      "max_weight": 22.5,
-      "min_weight": 12.0
-    },
-    {
-      "id": "B",
-      "inner_L": 520,
-      "inner_W": 450,
-      "inner_H": 300,
-      "max_weight": 22.5,
-      "min_weight": 12.0
-    },
-    {
-      "id": "C",
-      "inner_L": 420,
-      "inner_W": 280,
-      "inner_H": 230,
-      "max_weight": 22.5,
-      "min_weight": 12.0
-    },
-    {
-      "id": "D",
-      "inner_L": 300,
-      "inner_W": 220,
-      "inner_H": 200,
-      "max_weight": 22.5,
-      "min_weight": 12.0
-    },
-    {
-      "id": "E",
-      "inner_L": 520,
-      "inner_W": 220,
-      "inner_H": 300,
-      "max_weight": 22.5,
-      "min_weight": 12.0
-    }
-  ],
-  "items": [
-    {
-      "id": "BM-TNB100G01",
-      "L": 80,
-      "W": 43.1,
-      "H": 14.7,
-      "weight": 0.097,
-      "qty": 80
-    },
-    {
-      "id": "BM-TVR500G01",
-      "L": 68.5,
-      "W": 36.7,
-      "H": 36.8,
-      "weight": 0.2034,
-      "qty": 50
-    },
-    {
-      "id": "BM-MZG800G01",
-      "L": 37.1,
-      "W": 29.7,
-      "H": 4,
-      "weight": 0.0136,
-      "qty": 100
-    },
-    {
-      "id": "BM-NLH510G01",
-      "L": 25.7,
-      "W": 15.3,
-      "H": 6.3,
-      "weight": 0.0089,
-      "qty": 200
-    },
-    {
-      "id": "BM-THD4TG01",
-      "L": 41.2,
-      "W": 24.6,
-      "H": 6.6,
-      "weight": 0.02,
-      "qty": 100
-    }
-  ]
+"box_types": [
+{
+"id": "A",
+"inner_L": 520,
+"inner_W": 330,
+"inner_H": 300,
+"max_weight": 22.5,
+"min_weight": 12.0
+},
+{
+"id": "B",
+"inner_L": 520,
+"inner_W": 450,
+"inner_H": 300,
+"max_weight": 22.5,
+"min_weight": 12.0
+},
+{
+"id": "C",
+"inner_L": 420,
+"inner_W": 280,
+"inner_H": 230,
+"max_weight": 22.5,
+"min_weight": 12.0
+},
+{
+"id": "D",
+"inner_L": 300,
+"inner_W": 220,
+"inner_H": 200,
+"max_weight": 22.5,
+"min_weight": 12.0
+},
+{
+"id": "E",
+"inner_L": 520,
+"inner_W": 220,
+"inner_H": 300,
+"max_weight": 22.5,
+"min_weight": 12.0
+}
+],
+"items": [
+{
+  "qty": 100,
+"id": "X004HY08Z3",
+"W": 40.2,
+"H": 27.2,
+"L": 141.7,
+"number": "BM202601140006",
+"weight": 0.199,
+"order_id": 1992
+},
+{
+"qty": 100,
+"id": "X004R2MYST",
+"W": 40.5,
+"H": 24.5,
+"L": 143.5,
+"number": "BM202601140007",
+"weight": 0.1527,
+"order_id": 1993
+},
+{
+"qty": 50,
+"id": "X004I5YI43",
+"W": 61.0,
+"H": 33.0,
+"L": 65.7,
+"number": "BM202601140027",
+"weight": 0.229,
+"order_id": 2014
+},
+{
+"qty": 100,
+"id": "X004I67YYN",
+"W": 37.2,
+"H": 36.0,
+"L": 68.8,
+"number": "BM202601140037",
+"weight": 0.2086,
+"order_id": 2024
+},
+{
+"qty": 50,
+"id": "X004KDKU7R",
+"W": 16.5,
+"H": 6.4,
+"L": 31.0,
+"number": "BM202601150001",
+"weight": 0.0105,
+"order_id": 2025
+}
+]
 }

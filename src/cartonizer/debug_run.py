@@ -86,12 +86,13 @@ def run_batch(
 if __name__ == "__main__":
     # 在 PyCharm 里直接运行这个文件，支持断点调试。
     # 只需要改下面这些变量即可，不走 CLI。
-    # inputs = sorted(Path("examples").glob("bm_case_*.json"))
+    inputs = sorted(Path("examples").glob("bm_case_01.json"))
     # inputs = sorted(Path("examples").glob("bm_data.json"))
     # inputs = sorted(Path("examples").glob("bm_case_factory.json"))
     # inputs = sorted(Path("examples").glob("bm_case_goods_list.json"))
     # inputs = sorted(Path("examples").glob("bm_case_goods_list_1.json"))
-    inputs = sorted(Path("examples").glob("bm_case_goods_list_3.json"))
+    # # inputs = sorted(Path("examples").glob("bm_case_goods_list_3.json"))
+    # inputs = sorted(Path("examples").glob("Mingeris.json"))
 
     print(inputs)
     run_batch(
