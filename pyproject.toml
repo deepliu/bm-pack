@@ -1,21 +1,20 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bm-cartonizer"
-version = "0.1.2"
+version = "0.2.0"
 description = "bm产品装箱（重量合规、SKU 优先）"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = "MIT"
 authors = [{name = "jason", email = "877362946@qq.com"}]
 dependencies = [
   "py3dbp>=0.4",
   "matplotlib>=3.7",
 ]
 classifiers = [
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.8",

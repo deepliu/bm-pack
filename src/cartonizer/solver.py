@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from math import ceil
-from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
 from .feasibility import (
@@ -10,42 +9,34 @@ from .feasibility import (
     _build_suggestions,
     feasibility_bounds,
 )
-from .geometry import geometry_validate
+from .geometry_engine import GeometryEngine
+from .optimizers import optimize_box_types, optimize_quantities
 from .repair import BoxState, repair_underweight
+from .search import score_plan, target_box_counts, utilization_tiers
+from .state import (
+    box_state_to_packed_box,
+    expand_items,
+    item_fits_box,
+    item_volume,
+    order_item_weight,
+)
 from .types import BoxType, Item, PackedBox, PackedItem, PackingPlan
 
 
 def _volume(item: Item) -> float:
-    return item.L * item.W * item.H
+    return item_volume(item)
 
 
 def _fits(item: Item, box: BoxType) -> bool:
-    dims = (item.L, item.W, item.H)
-    box_dims = (box.inner_L, box.inner_W, box.inner_H)
-    return all(d <= b for d, b in zip(dims, box_dims))
+    return item_fits_box(item, box)
 
 
 def _expand_items(items: Iterable[Item]) -> list[Item]:
-    expanded: list[Item] = []
-    for item in items:
-        if item.qty <= 0:
-            continue
-        expanded.extend(
-            Item(
-                id=item.id,
-                L=item.L,
-                W=item.W,
-                H=item.H,
-                weight=item.weight,
-                qty=1,
-            )
-            for _ in range(item.qty)
-        )
-    return expanded
+    return expand_items(items)
 
 
 def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> FeasibilityResult:
-    total_weight = sum(item.weight * item.qty for item in items)
+    total_weight = order_item_weight(items)
     max_weight = max(box_type.max_weight - box_type.tare_weight for box_type in box_types)
     min_weight = min(max(0.0, box_type.min_weight - box_type.tare_weight) for box_type in box_types)
     b_min, b_max = feasibility_bounds(total_weight, min_weight, max_weight)
@@ -371,26 +362,20 @@ def pack_order(
 
     packed_boxes: list[PackedBox] = []
     box_type_by_id = {bt.id: bt for bt in box_types}
+    geometry_engine = GeometryEngine(
+        items_by_id={item.id: item for item in items},
+        enabled=geometry_check,
+        allow_rotation=allow_rotation,
+        visualize_dir=geometry_visualize_dir,
+    )
     for box in boxes:
-        packed_items = [PackedItem(item_id=item_id, qty=qty) for item_id, qty in box.items.items()]
-        packed_box = PackedBox(
-            box_type_id=box.box_type_id,
-            total_weight=box.total_weight,
-            items=packed_items,
-        )
+        packed_box = box_state_to_packed_box(box)
         if geometry_check:
             box_type_obj = box_type_by_id[box.box_type_id]
-            visualize_path = None
-            if geometry_visualize_dir:
-                visualize_path = str(
-                    Path(geometry_visualize_dir) / f"{box.box_type_id}_box_{len(packed_boxes)+1}.png"
-                )
-            geom = geometry_validate(
+            geom = geometry_engine.validate_box(
                 packed_box,
                 box_type_obj,
-                {item.id: item for item in items},
-                visualize_path=visualize_path,
-                allow_rotation=allow_rotation,
+                sequence=len(packed_boxes) + 1,
             )
             if not geom.ok:
                 return PackingPlan(
@@ -407,13 +392,7 @@ def pack_order(
                     suggestions=[],
                 )
 
-        packed_boxes.append(
-            PackedBox(
-                box_type_id=packed_box.box_type_id,
-                total_weight=packed_box.total_weight,
-                items=packed_box.items,
-            )
-        )
+        packed_boxes.append(packed_box)
 
     metrics = {
         "total_weight": total_weight,
@@ -448,6 +427,14 @@ def solve(
     box_types = box_type if isinstance(box_type, list) else [box_type]
     feasibility = _compute_feasibility(items, box_types)
     total_weight = feasibility.total_weight
+    items_by_id = {item.id: item for item in items}
+    box_type_by_id = {bt.id: bt for bt in box_types}
+    geometry_engine = GeometryEngine(
+        items_by_id=items_by_id,
+        enabled=geometry_check,
+        allow_rotation=allow_rotation,
+        visualize_dir=geometry_visualize_dir,
+    )
     if not feasibility.ok:
         return PackingPlan(
             status="infeasible",
@@ -464,47 +451,26 @@ def solve(
         )
 
     def _score_plan(plan: PackingPlan, b_min: int) -> tuple[float, int, float, float]:
-        item_by_id = {item.id: item for item in items}
-        box_type_by_id = {bt.id: bt for bt in box_types}
-        util_penalty = 0.0
-        sku_penalty = 0
-        box_volume_total = 0.0
-        for packed_box in plan.boxes:
-            box_type_obj = box_type_by_id[packed_box.box_type_id]
-            box_volume = box_type_obj.inner_L * box_type_obj.inner_W * box_type_obj.inner_H
-            box_volume_total += box_volume
-            total_volume = 0.0
-            sku_count = 0
-            for packed_item in packed_box.items:
-                item = item_by_id[packed_item.item_id]
-                total_volume += _volume(item) * packed_item.qty
-                sku_count += 1
-            util = total_volume / box_volume if box_volume > 0 else 0.0
-            if util < utilization_target:
-                util_penalty += (utilization_target - util)
-            sku_penalty += max(0, sku_count - 1)
-        box_count_penalty = float(max(0, plan.metrics.get("box_count", 0.0) - float(b_min)))
-        return (box_count_penalty, sku_penalty, util_penalty, box_volume_total)
+        return score_plan(
+            plan,
+            items_by_id=items_by_id,
+            box_types_by_id=box_type_by_id,
+            b_min=b_min,
+            utilization_target=utilization_target,
+        )
 
-    def _validate_plan(plan: PackingPlan) -> PackingPlan:
+    def _validate_plan(plan: PackingPlan, *, visualize: bool = False) -> PackingPlan:
         if not geometry_check:
             return plan
         if not plan.boxes:
             return plan
-        box_type_by_id = {bt.id: bt for bt in box_types}
         for idx, packed_box in enumerate(plan.boxes, start=1):
             box_type_obj = box_type_by_id[packed_box.box_type_id]
-            visualize_path = None
-            if geometry_visualize_dir:
-                visualize_path = str(
-                    Path(geometry_visualize_dir) / f"{packed_box.box_type_id}_box_{idx}.png"
-                )
-            geom = geometry_validate(
+            geom = geometry_engine.validate_box(
                 packed_box,
                 box_type_obj,
-                {item.id: item for item in items},
-                visualize_path=visualize_path,
-                allow_rotation=allow_rotation,
+                sequence=idx,
+                visualize=visualize,
             )
             if not geom.ok:
                 metrics = dict(plan.metrics)
@@ -533,220 +499,6 @@ def solve(
             boxes=plan.boxes,
             metrics=metrics,
             suggestions=plan.suggestions,
-        )
-
-    def _optimize_box_types(plan: PackingPlan) -> PackingPlan:
-        if plan.status != "ok" or not plan.boxes:
-            return plan
-
-        item_by_id = {item.id: item for item in items}
-        fill_rate_plan = float(plan.metrics.get("fill_rate", fill_rate))
-
-        optimized_boxes: list[PackedBox] = []
-        for packed_box in plan.boxes:
-            items_weight = 0.0
-            items_volume = 0.0
-            for packed_item in packed_box.items:
-                item = item_by_id[packed_item.item_id]
-                items_weight += item.weight * packed_item.qty
-                items_volume += _volume(item) * packed_item.qty
-
-            current_box_type = next(
-                (bt for bt in box_types if bt.id == packed_box.box_type_id), None
-            )
-            if current_box_type is None:
-                optimized_boxes.append(packed_box)
-                continue
-
-            candidates: list[BoxType] = []
-            for bt in box_types:
-                total_weight = items_weight + bt.tare_weight
-                if not (bt.min_weight <= total_weight <= bt.max_weight):
-                    continue
-                if any(
-                    not _fits(item_by_id[pi.item_id], bt) for pi in packed_box.items
-                ):
-                    continue
-                box_volume = bt.inner_L * bt.inner_W * bt.inner_H
-                if items_volume > box_volume * fill_rate_plan:
-                    continue
-                candidates.append(bt)
-
-            if not candidates:
-                optimized_boxes.append(packed_box)
-                continue
-
-            candidates.sort(
-                key=lambda bt: (bt.inner_L * bt.inner_W * bt.inner_H, bt.max_weight)
-            )
-            chosen = current_box_type
-            for candidate in candidates:
-                candidate_box = PackedBox(
-                    box_type_id=candidate.id,
-                    total_weight=items_weight + candidate.tare_weight,
-                    items=packed_box.items,
-                )
-                if geometry_check:
-                    geom = geometry_validate(
-                        candidate_box,
-                        candidate,
-                        item_by_id,
-                        allow_rotation=allow_rotation,
-                    )
-                    if not geom.ok:
-                        continue
-                chosen = candidate
-                break
-            optimized_boxes.append(
-                PackedBox(
-                    box_type_id=chosen.id,
-                    total_weight=items_weight + chosen.tare_weight,
-                    items=packed_box.items,
-                )
-            )
-
-        return PackingPlan(
-            status="ok",
-            reason="",
-            boxes=optimized_boxes,
-            metrics=dict(plan.metrics),
-            suggestions=[],
-        )
-
-    def _optimize_quantities(plan: PackingPlan) -> PackingPlan:
-        if plan.status != "ok" or not plan.boxes:
-            return plan
-
-        item_by_id = {item.id: item for item in items}
-        fill_rate_plan = float(plan.metrics.get("fill_rate", fill_rate))
-
-        mutable_boxes: list[BoxState] = []
-        for packed_box in plan.boxes:
-            bt = next((b for b in box_types if b.id == packed_box.box_type_id), None)
-            if bt is None:
-                continue
-            box_volume = bt.inner_L * bt.inner_W * bt.inner_H
-            max_volume = box_volume * fill_rate_plan
-            items_map: dict[str, int] = {}
-            total_weight = bt.tare_weight
-            total_volume = 0.0
-            for packed_item in packed_box.items:
-                items_map[packed_item.item_id] = packed_item.qty
-                item = item_by_id[packed_item.item_id]
-                total_weight += item.weight * packed_item.qty
-                total_volume += _volume(item) * packed_item.qty
-            mutable_boxes.append(
-                BoxState(
-                    box_type_id=bt.id,
-                    min_weight=bt.min_weight,
-                    max_weight=bt.max_weight,
-                    tare_weight=bt.tare_weight,
-                    box_volume=box_volume,
-                    max_volume=max_volume,
-                    total_weight=total_weight,
-                    total_volume=total_volume,
-                    items=items_map,
-                )
-            )
-
-        def _can_move(src: BoxState, dst: BoxState, sku_id: str, qty: int) -> bool:
-            if qty <= 0:
-                return False
-            if src.items.get(sku_id, 0) < qty:
-                return False
-            item = item_by_id[sku_id]
-            weight_delta = item.weight * qty
-            volume_delta = _volume(item) * qty
-            if dst.total_weight + weight_delta > dst.max_weight:
-                return False
-            if dst.total_volume + volume_delta > dst.max_volume:
-                return False
-            if src.total_weight - weight_delta < src.min_weight:
-                return False
-            if src.total_volume - volume_delta < 0:
-                return False
-            return True
-
-        def _move(src: BoxState, dst: BoxState, sku_id: str, qty: int) -> None:
-            item = item_by_id[sku_id]
-            weight_delta = item.weight * qty
-            volume_delta = _volume(item) * qty
-            src.items[sku_id] -= qty
-            if src.items[sku_id] <= 0:
-                del src.items[sku_id]
-            dst.items[sku_id] = dst.items.get(sku_id, 0) + qty
-            src.total_weight -= weight_delta
-            src.total_volume -= volume_delta
-            dst.total_weight += weight_delta
-            dst.total_volume += volume_delta
-
-        all_skus = sorted({pi.item_id for b in plan.boxes for pi in b.items})
-        for sku_id in all_skus:
-            boxes_with_sku = [b for b in mutable_boxes if b.items.get(sku_id, 0) > 0]
-            if len(boxes_with_sku) < 2:
-                continue
-            remainders = [b.items[sku_id] % 5 for b in boxes_with_sku]
-            if all(r == 0 for r in remainders):
-                continue
-
-            def _sorted_collectors() -> list[BoxState]:
-                return sorted(
-                    boxes_with_sku,
-                    key=lambda b: (
-                        -(b.max_weight - b.total_weight),
-                        -(b.max_volume - b.total_volume),
-                    ),
-                )
-
-            # Pass 1: move remainder out to a collector.
-            for box in boxes_with_sku:
-                rem = box.items[sku_id] % 5
-                if rem == 0:
-                    continue
-                for collector in _sorted_collectors():
-                    if collector is box:
-                        continue
-                    if _can_move(box, collector, sku_id, rem):
-                        _move(box, collector, sku_id, rem)
-                        break
-
-            # Pass 2: try to add to box to reach next multiple.
-            for box in boxes_with_sku:
-                rem = box.items.get(sku_id, 0) % 5
-                if rem == 0:
-                    continue
-                need = 5 - rem
-                donors = sorted(
-                    boxes_with_sku,
-                    key=lambda b: b.items.get(sku_id, 0),
-                    reverse=True,
-                )
-                for donor in donors:
-                    if donor is box:
-                        continue
-                    if _can_move(donor, box, sku_id, need):
-                        _move(donor, box, sku_id, need)
-                        break
-
-        packed_boxes: list[PackedBox] = []
-        for box in mutable_boxes:
-            packed_items = [
-                PackedItem(item_id=item_id, qty=qty) for item_id, qty in box.items.items()
-            ]
-            packed_boxes.append(
-                PackedBox(
-                    box_type_id=box.box_type_id,
-                    total_weight=box.total_weight,
-                    items=packed_items,
-                )
-            )
-
-        return PackingPlan(
-            status="ok",
-            reason="",
-            boxes=packed_boxes,
-            metrics=dict(plan.metrics),
-            suggestions=[],
         )
 
     def _pack_by_sku(
@@ -1137,39 +889,14 @@ def solve(
             suggestions=[],
         )
 
-    def _utilization_tiers(base: float) -> list[float]:
-        tiers = [base, 0.75, 0.70, 0.60]
-        seen: set[float] = set()
-        ordered: list[float] = []
-        for value in tiers:
-            rounded = round(float(value), 3)
-            if rounded in seen:
-                continue
-            seen.add(rounded)
-            ordered.append(float(value))
-        return ordered
-
-    def _target_box_counts(b_min: int, b_max: int, slack: int) -> list[int]:
-        candidates = [b_min + offset for offset in range(max(0, slack) + 1)]
-        unique: list[int] = []
-        seen: set[int] = set()
-        for count in candidates:
-            if count in seen:
-                continue
-            seen.add(count)
-            if b_max >= 0 and count > b_max:
-                continue
-            unique.append(count)
-        return unique
-
     best_plan: Optional[PackingPlan] = None
     best_score: Optional[tuple[float, int, float, float]] = None
     best_infeasible: Optional[PackingPlan] = None
     b_min = feasibility.b_min
     b_max = feasibility.b_max
     target_slack = b_max - b_min if geometry_check else max_box_slack
-    targets = _target_box_counts(b_min, b_max, target_slack)
-    util_tiers = _utilization_tiers(utilization_target)
+    targets = target_box_counts(b_min, b_max, target_slack)
+    util_tiers = utilization_tiers(utilization_target)
 
     def _record(plan: PackingPlan) -> None:
         nonlocal best_plan, best_score, best_infeasible
@@ -1177,13 +904,27 @@ def solve(
             if best_infeasible is None:
                 best_infeasible = plan
             return
-        candidate = _optimize_box_types(plan)
+        candidate = optimize_box_types(
+            plan,
+            items_by_id=items_by_id,
+            box_types=box_types,
+            geometry_engine=geometry_engine,
+            fill_rate=float(plan.metrics.get("fill_rate", fill_rate)),
+        )
         candidate = _validate_plan(candidate)
         if candidate.status != "ok":
             if best_infeasible is None or best_infeasible.reason != candidate.reason:
                 best_infeasible = candidate
             return
-        quantity_candidate = _validate_plan(_optimize_quantities(candidate))
+        quantity_candidate = _validate_plan(
+            optimize_quantities(
+                candidate,
+                items_by_id=items_by_id,
+                box_types_by_id=box_type_by_id,
+                geometry_engine=geometry_engine,
+                fill_rate=float(candidate.metrics.get("fill_rate", fill_rate)),
+            )
+        )
         if quantity_candidate.status == "ok":
             candidate = quantity_candidate
         score = _score_plan(candidate, b_min)
@@ -1249,7 +990,7 @@ def solve(
 
     # Stage C: if still infeasible, allow more boxes (up to b_max) and relax SKU limits.
     if best_plan is None and b_max > 0:
-        expanded_targets = _target_box_counts(b_min, b_max, b_max - b_min)
+        expanded_targets = target_box_counts(b_min, b_max, b_max - b_min)
         relaxed_sku_limits = [max_sku_types + 1, max_sku_types + 2, None]
         for sku_limit in relaxed_sku_limits:
             for util in util_tiers:
@@ -1288,4 +1029,6 @@ def solve(
             allow_rotation=allow_rotation,
             max_sku_types=max_sku_types,
         )
+    if geometry_visualize_dir:
+        return _validate_plan(best_plan, visualize=True)
     return best_plan
