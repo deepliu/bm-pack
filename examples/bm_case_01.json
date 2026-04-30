@@ -5,92 +5,46 @@
 "inner_L": 520,
 "inner_W": 330,
 "inner_H": 300,
-"max_weight": 22.5,
-"min_weight": 12.0
+"max_weight": 21.5,
+"min_weight": 11.5,
+  "tare_weight": 0.85
 },
 {
 "id": "B",
 "inner_L": 520,
 "inner_W": 450,
 "inner_H": 300,
-"max_weight": 22.5,
-"min_weight": 12.0
+"max_weight": 21.5,
+"min_weight": 11.5,
+  "tare_weight": 1.2
 },
 {
 "id": "C",
 "inner_L": 420,
 "inner_W": 280,
 "inner_H": 230,
-"max_weight": 22.5,
-"min_weight": 12.0
+"max_weight": 21.5,
+"min_weight": 11.5,
+  "tare_weight": 0.6
 },
 {
 "id": "D",
 "inner_L": 300,
 "inner_W": 220,
 "inner_H": 200,
-"max_weight": 22.5,
-"min_weight": 12.0
+"max_weight": 21.5,
+"min_weight": 11.5,
+  "tare_weight": 0.35
 },
 {
 "id": "E",
 "inner_L": 520,
 "inner_W": 220,
 "inner_H": 300,
-"max_weight": 22.5,
-"min_weight": 12.0
+"max_weight": 21.5,
+"min_weight": 11.5,
+  "tare_weight": 0.5
 }
 ],
-"items": [
-{
-  "qty": 100,
-"id": "X004HY08Z3",
-"W": 40.2,
-"H": 27.2,
-"L": 141.7,
-"number": "BM202601140006",
-"weight": 0.199,
-"order_id": 1992
-},
-{
-"qty": 100,
-"id": "X004R2MYST",
-"W": 40.5,
-"H": 24.5,
-"L": 143.5,
-"number": "BM202601140007",
-"weight": 0.1527,
-"order_id": 1993
-},
-{
-"qty": 50,
-"id": "X004I5YI43",
-"W": 61.0,
-"H": 33.0,
-"L": 65.7,
-"number": "BM202601140027",
-"weight": 0.229,
-"order_id": 2014
-},
-{
-"qty": 100,
-"id": "X004I67YYN",
-"W": 37.2,
-"H": 36.0,
-"L": 68.8,
-"number": "BM202601140037",
-"weight": 0.2086,
-"order_id": 2024
-},
-{
-"qty": 50,
-"id": "X004KDKU7R",
-"W": 16.5,
-"H": 6.4,
-"L": 31.0,
-"number": "BM202601150001",
-"weight": 0.0105,
-"order_id": 2025
-}
-]
+"items": [{"qty": 200, "id": "X002FJN9IF", "W": 50.0, "H": 50.0, "L": 80.0, "number": "BM202604280002", "weight": 0.1825, "goods_id": 104, "order_id": 2384, "goods_name": "BM-CFT320G01", "gross_weight_kg": 0.1825}, {"qty": 30, "id": "X004BLVIQZ", "W": 50.0, "H": 60.0, "L": 110.0, "number": "BM202604280005", "weight": 0.216, "goods_id": 70, "order_id": 2388, "goods_name": "BM-PES800G01_2P", "gross_weight_kg": 0.216}, {"qty": 50, "id": "X004ABH05T", "W": 24.0, "H": 80.0, "L": 150.0, "number": "BM202604280006", "weight": 0.215, "goods_id": 46, "order_id": 2389, "goods_name": "BM-JUP200G01", "gross_weight_kg": 0.215}, {"qty": 50, "id": "X004GCQCND", "W": 47.0, "H": 70.0, "L": 18.0, "number": "BM202604280007", "weight": 0.0148, "goods_id": 91, "order_id": 2390, "goods_name": "BM-LOH820G01", "gross_weight_kg": 0.0148}, {"qty": 30, "id": "X004BLV8SX", "W": 100.0, "H": 260.0, "L": 80.0, "number": "BM202604280008", "weight": 0.83, "goods_id": 64, "order_id": 2391, "goods_name": "BM-PES800G01_10P", "gross_weight_kg": 0.83}, {"qty": 30, "id": "X004MAFTDD", "W": 80.0, "H": 150.0, "L": 40.0, "number": "BM202604280009", "weight": 0.266, "goods_id": 155, "order_id": 2392, "goods_name": "BM-ETX600G01_10P", "gross_weight_kg": 0.266}]
 }

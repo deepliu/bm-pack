@@ -14,6 +14,22 @@ class GeometryResult:
     unfit_count: int
 
 
+@dataclass(frozen=True)
+class _PlacedItem:
+    item: Item
+    x: float
+    y: float
+    z: float
+
+
+@dataclass
+class _LocalBin:
+    width: float
+    height: float
+    depth: float
+    items: list[_PlacedItem]
+
+
 def _import_py3dbp():
     try:
         from py3dbp import Bin, Item, Packer  # type: ignore
@@ -89,6 +105,95 @@ def _iter_items(packed_items: Iterable[PackedItem], items_by_id: dict[str, Item]
     return expanded
 
 
+def _intersects(a: _PlacedItem, b: _PlacedItem) -> bool:
+    return not (
+        a.x + a.item.L <= b.x
+        or b.x + b.item.L <= a.x
+        or a.y + a.item.W <= b.y
+        or b.y + b.item.W <= a.y
+        or a.z + a.item.H <= b.z
+        or b.z + b.item.H <= a.z
+    )
+
+
+def _local_pack_no_rotation(
+    packed_items: Iterable[PackedItem],
+    box_type: BoxType,
+    items_by_id: dict[str, Item],
+) -> tuple[bool, _LocalBin, list[Item], str]:
+    expanded = _iter_items(packed_items, items_by_id)
+    requested_count = len(expanded)
+    ordered = sorted(
+        expanded,
+        key=lambda item: (
+            -(item.L * item.W * item.H),
+            -(item.L * item.W),
+            -item.H,
+            -item.weight,
+            item.id,
+        ),
+    )
+    local_bin = _LocalBin(
+        width=box_type.inner_L,
+        height=box_type.inner_W,
+        depth=box_type.inner_H,
+        items=[],
+    )
+    candidates: set[tuple[float, float, float]] = {(0.0, 0.0, 0.0)}
+    unfit: list[Item] = []
+
+    for item in ordered:
+        if item.L > box_type.inner_L or item.W > box_type.inner_W or item.H > box_type.inner_H:
+            unfit.append(item)
+            continue
+
+        placed: _PlacedItem | None = None
+        for x, y, z in sorted(candidates, key=lambda p: (p[2], p[1], p[0])):
+            if x + item.L > box_type.inner_L:
+                continue
+            if y + item.W > box_type.inner_W:
+                continue
+            if z + item.H > box_type.inner_H:
+                continue
+            trial = _PlacedItem(item=item, x=x, y=y, z=z)
+            if any(_intersects(trial, current) for current in local_bin.items):
+                continue
+            placed = trial
+            break
+
+        if placed is None:
+            unfit.append(item)
+            continue
+
+        local_bin.items.append(placed)
+        candidates.discard((placed.x, placed.y, placed.z))
+        for point in (
+            (placed.x + item.L, placed.y, placed.z),
+            (placed.x, placed.y + item.W, placed.z),
+            (placed.x, placed.y, placed.z + item.H),
+        ):
+            px, py, pz = point
+            if px <= box_type.inner_L and py <= box_type.inner_W and pz <= box_type.inner_H:
+                candidates.add(point)
+
+    if unfit:
+        return (
+            False,
+            local_bin,
+            unfit,
+            f"geometry infeasible: {len(unfit)} unfit items",
+        )
+    if len(local_bin.items) != requested_count:
+        missing = requested_count - len(local_bin.items)
+        return (
+            False,
+            local_bin,
+            unfit,
+            f"geometry infeasible: fitted quantity mismatch, missing={missing}",
+        )
+    return True, local_bin, [], ""
+
+
 def _save_figure(fig: Any, output_path: Path) -> None:
     if output_path.suffix.lower() == ".html" and hasattr(fig, "write_html"):
         fig.write_html(str(output_path))
@@ -141,10 +246,14 @@ def _plot_matplotlib(bin_obj: Any, output_path: Path) -> None:
         ]
 
     for idx, item in enumerate(getattr(bin_obj, "items", [])):
-        pos = getattr(item, "position", [0, 0, 0])
-        dims = item.get_dimension()
-        x, y, z = (float(pos[0]), float(pos[1]), float(pos[2]))
-        dx, dy, dz = (float(dims[0]), float(dims[1]), float(dims[2]))
+        if isinstance(item, _PlacedItem):
+            x, y, z = item.x, item.y, item.z
+            dx, dy, dz = item.item.L, item.item.W, item.item.H
+        else:
+            pos = getattr(item, "position", [0, 0, 0])
+            dims = item.get_dimension()
+            x, y, z = (float(pos[0]), float(pos[1]), float(pos[2]))
+            dx, dy, dz = (float(dims[0]), float(dims[1]), float(dims[2]))
         faces = _cuboid_faces(x, y, z, dx, dy, dz)
         poly = Poly3DCollection(
             faces,
@@ -166,7 +275,20 @@ def geometry_validate(
     items_by_id: dict[str, Item],
     *,
     visualize_path: Optional[str] = None,
+    allow_rotation: bool = False,
 ) -> GeometryResult:
+    if not allow_rotation:
+        ok, local_bin, unfit, reason = _local_pack_no_rotation(
+            packed_box.items,
+            box_type,
+            items_by_id,
+        )
+        if visualize_path and ok:
+            output_path = Path(visualize_path)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            _plot_matplotlib(local_bin, output_path)
+        return GeometryResult(ok=ok, reason=reason, unfit_count=len(unfit))
+
     Bin, ItemCls, Packer, Painter = _import_py3dbp()
 
     packer = Packer()
@@ -190,11 +312,21 @@ def geometry_validate(
         packer.pack(**pack_kwargs)
 
     unfit_count = len(getattr(packer, "unfit_items", []))
+    unfit_count += len(getattr(bin_obj, "unfitted_items", []))
     if unfit_count:
         return GeometryResult(
             ok=False,
-            reason="geometry infeasible: unfit items",
+            reason=f"geometry infeasible: {unfit_count} unfit items",
             unfit_count=unfit_count,
+        )
+    requested_count = sum(packed.qty for packed in packed_box.items)
+    fitted_count = len(getattr(bin_obj, "items", []))
+    if fitted_count != requested_count:
+        missing = requested_count - fitted_count
+        return GeometryResult(
+            ok=False,
+            reason=f"geometry infeasible: fitted quantity mismatch, missing={missing}",
+            unfit_count=max(0, missing),
         )
 
     if visualize_path:

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
-import json
 import sys
+
+if __package__ is None or __package__ == "":
+    _script_dir = sys.path[0]
+    if _script_dir.replace("\\", "/").endswith("/cartonizer"):
+        sys.path.pop(0)
+        sys.path.insert(0, _script_dir.rsplit("\\", 1)[0].rsplit("/", 1)[0])
+
+import json
 from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable, Optional
-
-# if __package__ is None or __package__ == "":
-#     sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from cartonizer.solver import solve
 from cartonizer.types import BoxType, Item
