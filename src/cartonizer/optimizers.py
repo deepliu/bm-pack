@@ -13,6 +13,7 @@ def optimize_box_types(
     box_types: list[BoxType],
     geometry_engine: GeometryEngine,
     fill_rate: float,
+    allow_underweight: bool = False,
 ) -> PackingPlan:
     if plan.status != "ok" or not plan.boxes:
         return plan
@@ -37,7 +38,9 @@ def optimize_box_types(
         candidates: list[BoxType] = []
         for box_type in box_types:
             total_weight = items_weight + box_type.tare_weight
-            if not (box_type.min_weight <= total_weight <= box_type.max_weight):
+            if total_weight > box_type.max_weight:
+                continue
+            if not allow_underweight and total_weight < box_type.min_weight:
                 continue
             if any(
                 not item_fits_box(items_by_id[pi.item_id], box_type)
@@ -94,6 +97,8 @@ def optimize_quantities(
     box_types_by_id: dict[str, BoxType],
     geometry_engine: GeometryEngine,
     fill_rate: float,
+    allow_underweight: bool = False,
+    max_sku_types: int | None = None,
 ) -> PackingPlan:
     if plan.status != "ok" or not plan.boxes:
         return plan
@@ -129,13 +134,19 @@ def optimize_quantities(
     def _can_move(src: BoxState, dst: BoxState, sku_id: str, qty: int) -> bool:
         if qty <= 0 or src.items.get(sku_id, 0) < qty:
             return False
+        if max_sku_types is not None and sku_id not in dst.items:
+            if len(dst.items) + 1 > max_sku_types:
+                return False
         item = items_by_id[sku_id]
         weight_delta = item.weight * qty
         volume_delta = item_volume(item) * qty
         return (
             dst.total_weight + weight_delta <= dst.max_weight
             and dst.total_volume + volume_delta <= dst.max_volume
-            and src.total_weight - weight_delta >= src.min_weight
+            and (
+                allow_underweight
+                or src.total_weight - weight_delta >= src.min_weight
+            )
             and src.total_volume - volume_delta >= 0
         )
 

@@ -1,0 +1,2271 @@
+{
+  "filters": {
+    "min_manual_box_weight": 12.0,
+    "max_manual_box_sku_types": 6,
+    "min_manual_box_count": 2,
+    "accepted_limit": 30,
+    "scan_limit": 500,
+    "scanned_count": 44,
+    "excluded_count": 33,
+    "excluded_cases": [
+      {
+        "carton_plan_id": 98,
+        "store_name": "BanGomi",
+        "handle_date": "2026-05-12",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 1.15
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 97,
+        "store_name": "Enyuly",
+        "handle_date": "2026-05-12",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": [
+          {
+            "carton_no": "1",
+            "sku_type_count": 9
+          }
+        ]
+      },
+      {
+        "carton_plan_id": 96,
+        "store_name": "BanGomi",
+        "handle_date": "2026-05-05",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 3.9
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 95,
+        "store_name": "YunwaBattey",
+        "handle_date": "2026-05-05",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 88,
+        "store_name": "Shinear battery",
+        "handle_date": "2026-05-12",
+        "manual_box_count": 3,
+        "min_manual_box_count": null,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.097
+          },
+          {
+            "carton_no": "2",
+            "total_weight": 0.097
+          },
+          {
+            "carton_no": "3",
+            "total_weight": 0.097
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 85,
+        "store_name": "BanGomi",
+        "handle_date": "2026-04-28",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 6.25
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 84,
+        "store_name": "Anytak",
+        "handle_date": "2026-04-28",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 80,
+        "store_name": "Flujoy",
+        "handle_date": "2026-04-28",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 79,
+        "store_name": "YunwaBattey",
+        "handle_date": "2026-04-28",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 73,
+        "store_name": "Juanly_Battery",
+        "handle_date": "2026-04-21",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": [
+          {
+            "carton_no": "1",
+            "sku_type_count": 9
+          }
+        ]
+      },
+      {
+        "carton_plan_id": 72,
+        "store_name": "Nvobry",
+        "handle_date": "2026-04-21",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 67,
+        "store_name": "BMSX",
+        "handle_date": "2026-04-21",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 65,
+        "store_name": "Tingen",
+        "handle_date": "2026-04-15",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 64,
+        "store_name": "Nvobry",
+        "handle_date": "2026-04-15",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 5.65
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 63,
+        "store_name": "Anytak",
+        "handle_date": "2026-04-15",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 61,
+        "store_name": "Shinear battery",
+        "handle_date": "2026-04-15",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 59,
+        "store_name": "YunwaBattey",
+        "handle_date": "2026-04-14",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 57,
+        "store_name": "Anytak",
+        "handle_date": "2026-04-14",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 52,
+        "store_name": "Nvobry",
+        "handle_date": "2026-04-07",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 1.55
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 49,
+        "store_name": "Anytak",
+        "handle_date": "2026-04-07",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 40,
+        "store_name": "Tingen",
+        "handle_date": "2026-03-25",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 37,
+        "store_name": "Flujoy",
+        "handle_date": "2026-03-25",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 8.4
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 35,
+        "store_name": "Mingeris",
+        "handle_date": "2026-03-25",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 10.95
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 33,
+        "store_name": "Enyuly",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.213
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 32,
+        "store_name": "Anytak",
+        "handle_date": "2026-03-25",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 28,
+        "store_name": "Nvobry",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 11.5
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 25,
+        "store_name": "BanGomi",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 11.7
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 24,
+        "store_name": "Anytak",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 23,
+        "store_name": "YunwaBattey",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.213
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 22,
+        "store_name": "Mingeris",
+        "handle_date": "2026-03-18",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 21,
+        "store_name": "Mingeris",
+        "handle_date": "2026-03-11",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.172
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 15,
+        "store_name": "Anytak",
+        "handle_date": "2026-03-11",
+        "manual_box_count": 1,
+        "min_manual_box_count": 2,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.249
+          }
+        ],
+        "over_sku_type_boxes": []
+      },
+      {
+        "carton_plan_id": 3,
+        "store_name": "YunwaBattey",
+        "handle_date": "2026-03-11",
+        "manual_box_count": 2,
+        "min_manual_box_count": null,
+        "low_weight_boxes": [
+          {
+            "carton_no": "1",
+            "total_weight": 0.229
+          },
+          {
+            "carton_no": "2",
+            "total_weight": 0.229
+          }
+        ],
+        "over_sku_type_boxes": []
+      }
+    ]
+  },
+  "cases": [
+    {
+      "carton_plan_id": 99,
+      "store_name": "Nino",
+      "handle_date": "2026-05-12",
+      "number": "Nino_2026-05-12",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "52",
+          "goods_id": "52",
+          "sku": "G000000000050",
+          "goods_name": "BM-DSG990G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.1388,
+          "qty": 110
+        },
+        {
+          "item_id": "129",
+          "goods_id": "129",
+          "sku": "G000000000124",
+          "goods_name": "BM-SHR710G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.209,
+          "qty": 100
+        },
+        {
+          "item_id": "49",
+          "goods_id": "49",
+          "sku": "G000000000047",
+          "goods_name": "BM-ILC790G01",
+          "length": 100.0,
+          "width": 70.0,
+          "height": 23.0,
+          "weight": 0.086,
+          "qty": 28
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "C",
+          "total_weight": 18.05,
+          "items": [
+            {
+              "sku": "G000000000124",
+              "goods_id": "129",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000050",
+              "goods_id": "52",
+              "qty": 50
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "E",
+          "total_weight": 21.75,
+          "items": [
+            {
+              "sku": "G000000000124",
+              "goods_id": "129",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000047",
+              "goods_id": "49",
+              "qty": 28
+            },
+            {
+              "sku": "G000000000050",
+              "goods_id": "52",
+              "qty": 60
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 2,
+        "total_qty": 238,
+        "quantity_summary": {
+          "129": 100,
+          "52": 110,
+          "49": 28
+        }
+      }
+    },
+    {
+      "carton_plan_id": 94,
+      "store_name": "Anytak",
+      "handle_date": "2026-05-12",
+      "number": "Anytak_2026-05-12",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "70",
+          "goods_id": "70",
+          "sku": "G000000000068",
+          "goods_name": "BM-PES800G01_2P",
+          "length": 110.0,
+          "width": 50.0,
+          "height": 60.0,
+          "weight": 0.216,
+          "qty": 50
+        },
+        {
+          "item_id": "64",
+          "goods_id": "64",
+          "sku": "G000000000062",
+          "goods_name": "BM-PES800G01_10P",
+          "length": 80.0,
+          "width": 100.0,
+          "height": 260.0,
+          "weight": 0.83,
+          "qty": 30
+        },
+        {
+          "item_id": "10",
+          "goods_id": "10",
+          "sku": "G000000000010",
+          "goods_name": "BM-SDX900G01",
+          "length": 150.0,
+          "width": 24.0,
+          "height": 80.0,
+          "weight": 0.24,
+          "qty": 50
+        },
+        {
+          "item_id": "184",
+          "goods_id": "184",
+          "sku": "G000000000173",
+          "goods_name": "BM-PBA300G02",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.12,
+          "qty": 50
+        },
+        {
+          "item_id": "102",
+          "goods_id": "102",
+          "sku": "G000000000100",
+          "goods_name": "BM-CFT320G02",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.188,
+          "qty": 100
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "C",
+          "total_weight": 19.15,
+          "items": [
+            {
+              "sku": "G000000000100",
+              "goods_id": "102",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "A",
+          "total_weight": 21.15,
+          "items": [
+            {
+              "sku": "G000000000062",
+              "goods_id": "64",
+              "qty": 20
+            },
+            {
+              "sku": "G000000000068",
+              "goods_id": "70",
+              "qty": 20
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "E",
+          "total_weight": 17.6,
+          "items": [
+            {
+              "sku": "G000000000010",
+              "goods_id": "10",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000068",
+              "goods_id": "70",
+              "qty": 30
+            }
+          ]
+        },
+        {
+          "carton_no": "4",
+          "box_type": "E",
+          "total_weight": 15.05,
+          "items": [
+            {
+              "sku": "G000000000173",
+              "goods_id": "184",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000062",
+              "goods_id": "64",
+              "qty": 10
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 4,
+        "total_qty": 280,
+        "quantity_summary": {
+          "102": 100,
+          "64": 30,
+          "70": 50,
+          "10": 50,
+          "184": 50
+        }
+      }
+    },
+    {
+      "carton_plan_id": 93,
+      "store_name": "YunwaBattey",
+      "handle_date": "2026-05-12",
+      "number": "YunwaBattey_2026-05-12",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "62",
+          "goods_id": "62",
+          "sku": "G000000000060",
+          "goods_name": "BM-EWV220G01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.199,
+          "qty": 100
+        },
+        {
+          "item_id": "68",
+          "goods_id": "68",
+          "sku": "G000000000066",
+          "goods_name": "BM-JML500G02",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.166,
+          "qty": 50
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "A",
+          "total_weight": 16.75,
+          "items": [
+            {
+              "sku": "G000000000060",
+              "goods_id": "62",
+              "qty": 80
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "C",
+          "total_weight": 12.9,
+          "items": [
+            {
+              "sku": "G000000000066",
+              "goods_id": "68",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000060",
+              "goods_id": "62",
+              "qty": 20
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 2,
+        "total_qty": 150,
+        "quantity_summary": {
+          "62": 100,
+          "68": 50
+        }
+      }
+    },
+    {
+      "carton_plan_id": 89,
+      "store_name": "Mingeris",
+      "handle_date": "2026-05-12",
+      "number": "Mingeris_2026-05-12",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "68",
+          "goods_id": "68",
+          "sku": "G000000000066",
+          "goods_name": "BM-JML500G02",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.166,
+          "qty": 50
+        },
+        {
+          "item_id": "73",
+          "goods_id": "73",
+          "sku": "G000000000071",
+          "goods_name": "BM-DET300G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0105,
+          "qty": 50
+        },
+        {
+          "item_id": "132",
+          "goods_id": "132",
+          "sku": "G000000000127",
+          "goods_name": "BM-SLX180G01_2P",
+          "length": 100.0,
+          "width": 110.0,
+          "height": 60.0,
+          "weight": 0.4,
+          "qty": 20
+        },
+        {
+          "item_id": "127",
+          "goods_id": "127",
+          "sku": "G000000000122",
+          "goods_name": "BM-SHR750G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.213,
+          "qty": 100
+        },
+        {
+          "item_id": "62",
+          "goods_id": "62",
+          "sku": "G000000000060",
+          "goods_name": "BM-EWV220G01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.199,
+          "qty": 100
+        },
+        {
+          "item_id": "41",
+          "goods_id": "41",
+          "sku": "G000000000039",
+          "goods_name": "BM-STM470G01",
+          "length": 110.0,
+          "width": 50.0,
+          "height": 60.0,
+          "weight": 0.229,
+          "qty": 50
+        },
+        {
+          "item_id": "49",
+          "goods_id": "49",
+          "sku": "G000000000047",
+          "goods_name": "BM-ILC790G01",
+          "length": 100.0,
+          "width": 70.0,
+          "height": 23.0,
+          "weight": 0.086,
+          "qty": 30
+        },
+        {
+          "item_id": "148",
+          "goods_id": "148",
+          "sku": "G000000000143",
+          "goods_name": "BM-DET300G01_2P",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.02,
+          "qty": 50
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "E",
+          "total_weight": 20.5,
+          "items": [
+            {
+              "sku": "G000000000039",
+              "goods_id": "41",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000127",
+              "goods_id": "132",
+              "qty": 20
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "A",
+          "total_weight": 21.25,
+          "items": [
+            {
+              "sku": "G000000000071",
+              "goods_id": "73",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000060",
+              "goods_id": "62",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "C",
+          "total_weight": 16.85,
+          "items": [
+            {
+              "sku": "G000000000066",
+              "goods_id": "68",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000047",
+              "goods_id": "49",
+              "qty": 30
+            },
+            {
+              "sku": "G000000000122",
+              "goods_id": "127",
+              "qty": 25
+            }
+          ]
+        },
+        {
+          "carton_no": "4",
+          "box_type": "C",
+          "total_weight": 17.55,
+          "items": [
+            {
+              "sku": "G000000000143",
+              "goods_id": "148",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000122",
+              "goods_id": "127",
+              "qty": 75
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 4,
+        "total_qty": 450,
+        "quantity_summary": {
+          "41": 50,
+          "132": 20,
+          "73": 50,
+          "62": 100,
+          "68": 50,
+          "49": 30,
+          "127": 100,
+          "148": 50
+        }
+      }
+    },
+    {
+      "carton_plan_id": 81,
+      "store_name": "Anytak",
+      "handle_date": "2026-05-05",
+      "number": "Anytak_2026-05-05",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "104",
+          "goods_id": "104",
+          "sku": "G000000000102",
+          "goods_name": "BM-CFT320G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.1825,
+          "qty": 200
+        },
+        {
+          "item_id": "46",
+          "goods_id": "46",
+          "sku": "G000000000044",
+          "goods_name": "BM-JUP200G01",
+          "length": 150.0,
+          "width": 24.0,
+          "height": 80.0,
+          "weight": 0.215,
+          "qty": 50
+        },
+        {
+          "item_id": "91",
+          "goods_id": "91",
+          "sku": "G000000000089",
+          "goods_name": "BM-LOH820G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0148,
+          "qty": 50
+        },
+        {
+          "item_id": "64",
+          "goods_id": "64",
+          "sku": "G000000000062",
+          "goods_name": "BM-PES800G01_10P",
+          "length": 80.0,
+          "width": 100.0,
+          "height": 260.0,
+          "weight": 0.83,
+          "qty": 13
+        },
+        {
+          "item_id": "155",
+          "goods_id": "155",
+          "sku": "G000000000150",
+          "goods_name": "BM-ETX600G01_10P",
+          "length": 40.0,
+          "width": 80.0,
+          "height": 150.0,
+          "weight": 0.266,
+          "qty": 30
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "C",
+          "total_weight": 19.0,
+          "items": [
+            {
+              "sku": "G000000000102",
+              "goods_id": "104",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "C",
+          "total_weight": 19.0,
+          "items": [
+            {
+              "sku": "G000000000102",
+              "goods_id": "104",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "E",
+          "total_weight": 12.0,
+          "items": [
+            {
+              "sku": "G000000000062",
+              "goods_id": "64",
+              "qty": 13
+            },
+            {
+              "sku": "G000000000089",
+              "goods_id": "91",
+              "qty": 50
+            }
+          ]
+        },
+        {
+          "carton_no": "4",
+          "box_type": "A",
+          "total_weight": 18.6,
+          "items": [
+            {
+              "sku": "G000000000044",
+              "goods_id": "46",
+              "qty": 50
+            },
+            {
+              "sku": "G000000000150",
+              "goods_id": "155",
+              "qty": 30
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 4,
+        "total_qty": 343,
+        "quantity_summary": {
+          "104": 200,
+          "64": 13,
+          "91": 50,
+          "46": 50,
+          "155": 30
+        }
+      }
+    },
+    {
+      "carton_plan_id": 75,
+      "store_name": "Mingeris",
+      "handle_date": "2026-04-28",
+      "number": "Mingeris_2026-04-28",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "160",
+          "goods_id": "160",
+          "sku": "G000000000154",
+          "goods_name": "BM-EWV20172VG01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.1527,
+          "qty": 100
+        },
+        {
+          "item_id": "73",
+          "goods_id": "73",
+          "sku": "G000000000071",
+          "goods_name": "BM-DET300G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0105,
+          "qty": 50
+        },
+        {
+          "item_id": "71",
+          "goods_id": "71",
+          "sku": "G000000000069",
+          "goods_name": "BM-LQS400G01",
+          "length": 100.0,
+          "width": 70.0,
+          "height": 23.0,
+          "weight": 0.06,
+          "qty": 30
+        },
+        {
+          "item_id": "53",
+          "goods_id": "53",
+          "sku": "G000000000051",
+          "goods_name": "BM-MLR125G01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.2015,
+          "qty": 80
+        },
+        {
+          "item_id": "17",
+          "goods_id": "17",
+          "sku": "G000000000016",
+          "goods_name": "BM-TVR500G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.2034,
+          "qty": 100
+        },
+        {
+          "item_id": "127",
+          "goods_id": "127",
+          "sku": "G000000000122",
+          "goods_name": "BM-SHR750G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.213,
+          "qty": 100
+        },
+        {
+          "item_id": "41",
+          "goods_id": "41",
+          "sku": "G000000000039",
+          "goods_name": "BM-STM470G01",
+          "length": 110.0,
+          "width": 50.0,
+          "height": 60.0,
+          "weight": 0.229,
+          "qty": 50
+        },
+        {
+          "item_id": "68",
+          "goods_id": "68",
+          "sku": "G000000000066",
+          "goods_name": "BM-JML500G02",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.166,
+          "qty": 50
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "C",
+          "total_weight": 21.1,
+          "items": [
+            {
+              "sku": "X004J8XTR1",
+              "goods_id": "127",
+              "qty": 95
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "C",
+          "total_weight": 20.95,
+          "items": [
+            {
+              "sku": "X004JRD5ET",
+              "goods_id": "17",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "A",
+          "total_weight": 19.7,
+          "items": [
+            {
+              "sku": "X004J6OYPT",
+              "goods_id": "53",
+              "qty": 80
+            },
+            {
+              "sku": "X004I5WIQN",
+              "goods_id": "71",
+              "qty": 30
+            },
+            {
+              "sku": "X004J8XTR1",
+              "goods_id": "127",
+              "qty": 5
+            }
+          ]
+        },
+        {
+          "carton_no": "4",
+          "box_type": "A",
+          "total_weight": 16.55,
+          "items": [
+            {
+              "sku": "X004R2MYST",
+              "goods_id": "160",
+              "qty": 100
+            },
+            {
+              "sku": "X004KDKU7R",
+              "goods_id": "73",
+              "qty": 50
+            }
+          ]
+        },
+        {
+          "carton_no": "5",
+          "box_type": "E",
+          "total_weight": 20.35,
+          "items": [
+            {
+              "sku": "X004I5YI43",
+              "goods_id": "41",
+              "qty": 50
+            },
+            {
+              "sku": "X004Z2PLTF",
+              "goods_id": "68",
+              "qty": 50
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 5,
+        "total_qty": 560,
+        "quantity_summary": {
+          "127": 100,
+          "17": 100,
+          "53": 80,
+          "71": 30,
+          "160": 100,
+          "73": 50,
+          "41": 50,
+          "68": 50
+        }
+      }
+    },
+    {
+      "carton_plan_id": 74,
+      "store_name": "Anytak",
+      "handle_date": "2026-04-21",
+      "number": "Anytak_2026-04-21",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "155",
+          "goods_id": "155",
+          "sku": "G000000000150",
+          "goods_name": "BM-ETX600G01_10P",
+          "length": 40.0,
+          "width": 80.0,
+          "height": 150.0,
+          "weight": 0.266,
+          "qty": 30
+        },
+        {
+          "item_id": "63",
+          "goods_id": "63",
+          "sku": "G000000000061",
+          "goods_name": "BM-PES800G01_5P",
+          "length": 100.0,
+          "width": 110.0,
+          "height": 60.0,
+          "weight": 0.43,
+          "qty": 50
+        },
+        {
+          "item_id": "73",
+          "goods_id": "73",
+          "sku": "G000000000071",
+          "goods_name": "BM-DET300G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0105,
+          "qty": 30
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "E",
+          "total_weight": 12.7,
+          "items": [
+            {
+              "sku": "X004BLKJZ1",
+              "goods_id": "63",
+              "qty": 20
+            },
+            {
+              "sku": "X004MAFTDD",
+              "goods_id": "155",
+              "qty": 15
+            },
+            {
+              "sku": "X004AV3VE3",
+              "goods_id": "73",
+              "qty": 30
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "E",
+          "total_weight": 16.55,
+          "items": [
+            {
+              "sku": "X004MAFTDD",
+              "goods_id": "155",
+              "qty": 15
+            },
+            {
+              "sku": "X004BLKJZ1",
+              "goods_id": "63",
+              "qty": 30
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 2,
+        "total_qty": 110,
+        "quantity_summary": {
+          "63": 50,
+          "155": 30,
+          "73": 30
+        }
+      }
+    },
+    {
+      "carton_plan_id": 54,
+      "store_name": "YunwaBattey",
+      "handle_date": "2026-04-07",
+      "number": "YunwaBattey_2026-04-07",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "62",
+          "goods_id": "62",
+          "sku": "G000000000060",
+          "goods_name": "BM-EWV220G01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.199,
+          "qty": 160
+        },
+        {
+          "item_id": "41",
+          "goods_id": "41",
+          "sku": "G000000000039",
+          "goods_name": "BM-STM470G01",
+          "length": 110.0,
+          "width": 50.0,
+          "height": 60.0,
+          "weight": 0.229,
+          "qty": 80
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "A",
+          "total_weight": 16.75,
+          "items": [
+            {
+              "sku": "X004KA7CDP",
+              "goods_id": "62",
+              "qty": 80
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "A",
+          "total_weight": 16.75,
+          "items": [
+            {
+              "sku": "X004FVDUTJ",
+              "goods_id": "62",
+              "qty": 80
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "E",
+          "total_weight": 18.85,
+          "items": [
+            {
+              "sku": "X004G02B4T",
+              "goods_id": "41",
+              "qty": 80
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 3,
+        "total_qty": 240,
+        "quantity_summary": {
+          "62": 160,
+          "41": 80
+        }
+      }
+    },
+    {
+      "carton_plan_id": 51,
+      "store_name": "Mingeris",
+      "handle_date": "2026-04-07",
+      "number": "Mingeris_2026-04-07",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "62",
+          "goods_id": "62",
+          "sku": "G000000000060",
+          "goods_name": "BM-EWV220G01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.199,
+          "qty": 100
+        },
+        {
+          "item_id": "3",
+          "goods_id": "3",
+          "sku": "G000000000003",
+          "goods_name": "BM-THL400G02",
+          "length": 100.0,
+          "width": 70.0,
+          "height": 23.0,
+          "weight": 0.059,
+          "qty": 80
+        },
+        {
+          "item_id": "148",
+          "goods_id": "148",
+          "sku": "G000000000143",
+          "goods_name": "BM-DET300G01_2P",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.02,
+          "qty": 50
+        },
+        {
+          "item_id": "41",
+          "goods_id": "41",
+          "sku": "G000000000039",
+          "goods_name": "BM-STM470G01",
+          "length": 110.0,
+          "width": 50.0,
+          "height": 60.0,
+          "weight": 0.229,
+          "qty": 100
+        },
+        {
+          "item_id": "160",
+          "goods_id": "160",
+          "sku": "G000000000154",
+          "goods_name": "BM-EWV20172VG01",
+          "length": 50.0,
+          "width": 50.0,
+          "height": 160.0,
+          "weight": 0.1527,
+          "qty": 100
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "A",
+          "total_weight": 16.05,
+          "items": [
+            {
+              "sku": "X004R2MYST",
+              "goods_id": "160",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "A",
+          "total_weight": 20.75,
+          "items": [
+            {
+              "sku": "X004HY08Z3",
+              "goods_id": "62",
+              "qty": 100
+            }
+          ]
+        },
+        {
+          "carton_no": "3",
+          "box_type": "C",
+          "total_weight": 12.05,
+          "items": [
+            {
+              "sku": "X004I5YI43",
+              "goods_id": "41",
+              "qty": 50
+            }
+          ]
+        },
+        {
+          "carton_no": "4",
+          "box_type": "A",
+          "total_weight": 18.3,
+          "items": [
+            {
+              "sku": "X004I5YI43",
+              "goods_id": "41",
+              "qty": 50
+            },
+            {
+              "sku": "X004I4UA91",
+              "goods_id": "3",
+              "qty": 80
+            },
+            {
+              "sku": "X004KEC9K7",
+              "goods_id": "148",
+              "qty": 50
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 4,
+        "total_qty": 430,
+        "quantity_summary": {
+          "160": 100,
+          "62": 100,
+          "41": 100,
+          "3": 80,
+          "148": 50
+        }
+      }
+    },
+    {
+      "carton_plan_id": 45,
+      "store_name": "Anytak",
+      "handle_date": "2026-04-01",
+      "number": "Anytak_2026-04-01",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "64",
+          "goods_id": "64",
+          "sku": "G000000000062",
+          "goods_name": "BM-PES800G01_10P",
+          "length": 80.0,
+          "width": 100.0,
+          "height": 260.0,
+          "weight": 0.83,
+          "qty": 30
+        },
+        {
+          "item_id": "63",
+          "goods_id": "63",
+          "sku": "G000000000061",
+          "goods_name": "BM-PES800G01_5P",
+          "length": 100.0,
+          "width": 110.0,
+          "height": 60.0,
+          "weight": 0.43,
+          "qty": 30
+        },
+        {
+          "item_id": "130",
+          "goods_id": "130",
+          "sku": "G000000000125",
+          "goods_name": "BM-STD30G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.0806,
+          "qty": 30
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "A",
+          "total_weight": 20.85,
+          "items": [
+            {
+              "sku": "X004BLV8SX",
+              "goods_id": "64",
+              "qty": 24
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "A",
+          "total_weight": 20.95,
+          "items": [
+            {
+              "sku": "X004BLV8SX",
+              "goods_id": "64",
+              "qty": 6
+            },
+            {
+              "sku": "X004BLKJZ1",
+              "goods_id": "63",
+              "qty": 30
+            },
+            {
+              "sku": "B07KQ4TZST",
+              "goods_id": "130",
+              "qty": 30
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 2,
+        "total_qty": 90,
+        "quantity_summary": {
+          "64": 30,
+          "63": 30,
+          "130": 30
+        }
+      }
+    },
+    {
+      "carton_plan_id": 31,
+      "store_name": "evrongx",
+      "handle_date": "2026-03-18",
+      "number": "evrongx_2026-03-18",
+      "source_type": "manual",
+      "box_types": [
+        {
+          "id": "A",
+          "inner_L": 520.0,
+          "inner_W": 330.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.85
+        },
+        {
+          "id": "B",
+          "inner_L": 520.0,
+          "inner_W": 450.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 1.2
+        },
+        {
+          "id": "C",
+          "inner_L": 420.0,
+          "inner_W": 280.0,
+          "inner_H": 230.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.6
+        },
+        {
+          "id": "D",
+          "inner_L": 300.0,
+          "inner_W": 220.0,
+          "inner_H": 200.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.35
+        },
+        {
+          "id": "E",
+          "inner_L": 520.0,
+          "inner_W": 220.0,
+          "inner_H": 300.0,
+          "max_weight": 22.0,
+          "min_weight": 11.5,
+          "tare_weight": 0.5
+        }
+      ],
+      "items": [
+        {
+          "item_id": "72",
+          "goods_id": "72",
+          "sku": "G000000000070",
+          "goods_name": "BM-IML250G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0271,
+          "qty": 70
+        },
+        {
+          "item_id": "18",
+          "goods_id": "18",
+          "sku": "G000000000017",
+          "goods_name": "BM-LQS200G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0535,
+          "qty": 90
+        },
+        {
+          "item_id": "7",
+          "goods_id": "7",
+          "sku": "G000000000007",
+          "goods_name": "BM-MIK176G01",
+          "length": 18.0,
+          "width": 47.0,
+          "height": 70.0,
+          "weight": 0.0252,
+          "qty": 20
+        },
+        {
+          "item_id": "8",
+          "goods_id": "8",
+          "sku": "G000000000008",
+          "goods_name": "BM-ALM990G01",
+          "length": 100.0,
+          "width": 70.0,
+          "height": 23.0,
+          "weight": 0.0924,
+          "qty": 60
+        },
+        {
+          "item_id": "129",
+          "goods_id": "129",
+          "sku": "G000000000124",
+          "goods_name": "BM-SHR710G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.209,
+          "qty": 30
+        },
+        {
+          "item_id": "17",
+          "goods_id": "17",
+          "sku": "G000000000016",
+          "goods_name": "BM-TVR500G01",
+          "length": 80.0,
+          "width": 50.0,
+          "height": 50.0,
+          "weight": 0.2034,
+          "qty": 20
+        }
+      ],
+      "manual_boxes": [
+        {
+          "carton_no": "1",
+          "box_type": "C",
+          "total_weight": 12.35,
+          "items": [
+            {
+              "sku": "G000000000070",
+              "goods_id": "72",
+              "qty": 30
+            },
+            {
+              "sku": "G000000000007",
+              "goods_id": "7",
+              "qty": 20
+            },
+            {
+              "sku": "G000000000124",
+              "goods_id": "129",
+              "qty": 30
+            },
+            {
+              "sku": "G000000000016",
+              "goods_id": "17",
+              "qty": 20
+            }
+          ]
+        },
+        {
+          "carton_no": "2",
+          "box_type": "C",
+          "total_weight": 12.0,
+          "items": [
+            {
+              "sku": "G000000000070",
+              "goods_id": "72",
+              "qty": 40
+            },
+            {
+              "sku": "G000000000017",
+              "goods_id": "18",
+              "qty": 90
+            },
+            {
+              "sku": "G000000000008",
+              "goods_id": "8",
+              "qty": 60
+            }
+          ]
+        }
+      ],
+      "manual_metrics": {
+        "box_count": 2,
+        "total_qty": 290,
+        "quantity_summary": {
+          "72": 70,
+          "7": 20,
+          "129": 30,
+          "17": 20,
+          "18": 90,
+          "8": 60
+        }
+      }
+    }
+  ]
+}

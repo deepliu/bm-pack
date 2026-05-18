@@ -22,6 +22,8 @@ from .state import (
 )
 from .types import BoxType, Item, PackedBox, PackedItem, PackingPlan
 
+MAX_SKU_TYPES_CAP = 6
+
 
 def _volume(item: Item) -> float:
     return item_volume(item)
@@ -35,11 +37,18 @@ def _expand_items(items: Iterable[Item]) -> list[Item]:
     return expand_items(items)
 
 
-def _compute_feasibility(items: list[Item], box_types: list[BoxType]) -> FeasibilityResult:
+def _compute_feasibility(
+    items: list[Item],
+    box_types: list[BoxType],
+    *,
+    allow_underweight: bool = False,
+) -> FeasibilityResult:
     total_weight = order_item_weight(items)
     max_weight = max(box_type.max_weight - box_type.tare_weight for box_type in box_types)
     min_weight = min(max(0.0, box_type.min_weight - box_type.tare_weight) for box_type in box_types)
     b_min, b_max = feasibility_bounds(total_weight, min_weight, max_weight)
+    if allow_underweight:
+        b_max = max(b_max, b_min, len(_expand_items(items)))
     if b_min > b_max:
         reason = (
             f"infeasible: total_weight={total_weight:.3f}, "
@@ -120,9 +129,12 @@ def pack_order(
     geometry_check: bool = False,
     geometry_visualize_dir: Optional[str] = None,
     allow_rotation: bool = False,
+    profile: str = "strict",
     metrics_extra: Optional[dict[str, float]] = None,
 ) -> PackingPlan:
     box_types = box_type if isinstance(box_type, list) else [box_type]
+    if max_sku_types is not None:
+        max_sku_types = max(1, min(int(max_sku_types), MAX_SKU_TYPES_CAP))
     if not box_types:
         return PackingPlan(
             status="infeasible",
@@ -136,7 +148,17 @@ def pack_order(
             suggestions=[],
         )
 
-    feasibility = _compute_feasibility(items, box_types)
+    allow_underweight = profile == "manual_like"
+    if max_sku_types is None:
+        base_max_sku_types = MAX_SKU_TYPES_CAP
+    else:
+        base_max_sku_types = max(1, min(int(max_sku_types), MAX_SKU_TYPES_CAP))
+
+    feasibility = _compute_feasibility(
+        items,
+        box_types,
+        allow_underweight=allow_underweight,
+    )
     total_weight = feasibility.total_weight
     if not feasibility.ok:
         return PackingPlan(
@@ -310,9 +332,12 @@ def pack_order(
         item_volumes,
         max_sku_types=max_sku_types,
     )
+    if allow_underweight:
+        boxes = [box for box in boxes if box.items]
 
     if any(
-        box.total_weight < box.min_weight or box.total_weight > box.max_weight
+        (not allow_underweight and box.total_weight < box.min_weight)
+        or box.total_weight > box.max_weight
         for box in boxes
     ):
         deficit = sum(
@@ -400,6 +425,13 @@ def pack_order(
         "lower_bound_by_weight": float(
             ceil(total_weight / max(bt.max_weight for bt in box_types))
         ),
+        "underweight_boxes": float(
+            sum(
+                1
+                for packed_box in packed_boxes
+                if packed_box.total_weight < box_type_by_id[packed_box.box_type_id].min_weight
+            )
+        ),
     }
     if metrics_extra:
         metrics.update(metrics_extra)
@@ -423,9 +455,31 @@ def solve(
     geometry_check: bool = False,
     geometry_visualize_dir: Optional[str] = None,
     allow_rotation: bool = False,
+    profile: str = "strict",
 ) -> PackingPlan:
     box_types = box_type if isinstance(box_type, list) else [box_type]
-    feasibility = _compute_feasibility(items, box_types)
+    if profile not in {"strict", "manual_like"}:
+        return PackingPlan(
+            status="infeasible",
+            reason=f"infeasible: unknown profile {profile}",
+            boxes=[],
+            metrics={
+                "total_weight": order_item_weight(items),
+                "box_count": 0.0,
+                "lower_bound_by_weight": 0.0,
+            },
+            suggestions=[],
+        )
+    allow_underweight = profile == "manual_like"
+    if max_sku_types is None:
+        base_max_sku_types = MAX_SKU_TYPES_CAP
+    else:
+        base_max_sku_types = max(1, min(int(max_sku_types), MAX_SKU_TYPES_CAP))
+    feasibility = _compute_feasibility(
+        items,
+        box_types,
+        allow_underweight=allow_underweight,
+    )
     total_weight = feasibility.total_weight
     items_by_id = {item.id: item for item in items}
     box_type_by_id = {bt.id: bt for bt in box_types}
@@ -450,14 +504,45 @@ def solve(
             suggestions=feasibility.suggestions,
         )
 
-    def _score_plan(plan: PackingPlan, b_min: int) -> tuple[float, int, float, float]:
+    def _score_plan(plan: PackingPlan, b_min: int) -> tuple[float, ...]:
         return score_plan(
             plan,
             items_by_id=items_by_id,
             box_types_by_id=box_type_by_id,
             b_min=b_min,
             utilization_target=utilization_target,
+            allow_underweight=allow_underweight,
+            max_sku_types=MAX_SKU_TYPES_CAP,
         )
+
+    def _sku_limit_candidates(*, include_relaxed: bool = True) -> list[int]:
+        upper = MAX_SKU_TYPES_CAP if include_relaxed else base_max_sku_types
+        return list(range(base_max_sku_types, upper + 1))
+
+    def _plan_sku_limit(plan: PackingPlan) -> int:
+        raw_limit = plan.metrics.get("max_sku_types", MAX_SKU_TYPES_CAP)
+        try:
+            limit = int(raw_limit)
+        except (TypeError, ValueError):
+            limit = MAX_SKU_TYPES_CAP
+        return max(1, min(limit, MAX_SKU_TYPES_CAP))
+
+    def _sku_limit_error(plan: PackingPlan, sku_limit: int) -> Optional[PackingPlan]:
+        for packed_box in plan.boxes:
+            if len(packed_box.items) > sku_limit:
+                metrics = dict(plan.metrics)
+                metrics["max_sku_types_in_box"] = float(len(packed_box.items))
+                return PackingPlan(
+                    status="infeasible",
+                    reason=(
+                        "infeasible: box exceeds max_sku_types "
+                        f"({len(packed_box.items)} > {sku_limit})"
+                    ),
+                    boxes=[],
+                    metrics=metrics,
+                    suggestions=[],
+                )
+        return None
 
     def _validate_plan(plan: PackingPlan, *, visualize: bool = False) -> PackingPlan:
         if not geometry_check:
@@ -493,6 +578,7 @@ def solve(
                 )
         metrics = dict(plan.metrics)
         metrics["geometry_checked"] = 1.0
+        metrics["geometry_cache_hits"] = float(geometry_engine.cache_hits)
         return PackingPlan(
             status=plan.status,
             reason=plan.reason,
@@ -680,8 +766,11 @@ def solve(
             {i.id: _volume(i) for i in items},
             max_sku_types=max_sku_types,
         )
+        if allow_underweight:
+            boxes = [box for box in boxes if box.items]
         if any(
-            box.total_weight < box.min_weight or box.total_weight > box.max_weight
+            (not allow_underweight and box.total_weight < box.min_weight)
+            or box.total_weight > box.max_weight
             for box in boxes
         ):
             return PackingPlan(
@@ -720,11 +809,18 @@ def solve(
                 "lower_bound_by_weight": float(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
+                "underweight_boxes": float(
+                    sum(
+                        1
+                        for box in packed_boxes
+                        if box.total_weight < box_type_by_id[box.box_type_id].min_weight
+                    )
+                ),
             },
             suggestions=[],
         )
 
-    def _choose_universal_box_type() -> Optional[BoxType]:
+    def _choose_universal_box_type(*, prefer_large_box: bool = True) -> Optional[BoxType]:
         candidates: list[BoxType] = []
         for bt in box_types:
             capacity = bt.max_weight - bt.tare_weight
@@ -734,9 +830,14 @@ def solve(
                 candidates.append(bt)
         if not candidates:
             return None
-        candidates.sort(
-            key=lambda bt: (-(bt.inner_L * bt.inner_W * bt.inner_H), -bt.max_weight)
-        )
+        if prefer_large_box:
+            candidates.sort(
+                key=lambda bt: (-(bt.inner_L * bt.inner_W * bt.inner_H), -bt.max_weight)
+            )
+        else:
+            candidates.sort(
+                key=lambda bt: (bt.inner_L * bt.inner_W * bt.inner_H, bt.max_weight)
+            )
         return candidates[0]
 
     def _pack_by_sku_groups(
@@ -744,6 +845,7 @@ def solve(
         *,
         fill_rate: float,
         max_sku_types: Optional[int],
+        prefer_large_box: bool = True,
     ) -> PackingPlan:
         if max_sku_types is None or max_sku_types <= 0:
             return PackingPlan(
@@ -760,7 +862,7 @@ def solve(
                 suggestions=[],
             )
 
-        bt = _choose_universal_box_type()
+        bt = _choose_universal_box_type(prefer_large_box=prefer_large_box)
         if bt is None:
             return PackingPlan(
                 status="infeasible",
@@ -844,9 +946,12 @@ def solve(
             {i.id: _volume(i) for i in items},
             max_sku_types=max_sku_types,
         )
+        if allow_underweight:
+            boxes = [box for box in boxes if box.items]
 
         if any(
-            box.total_weight < box.min_weight or box.total_weight > box.max_weight
+            (not allow_underweight and box.total_weight < box.min_weight)
+            or box.total_weight > box.max_weight
             for box in boxes
         ):
             return PackingPlan(
@@ -885,36 +990,407 @@ def solve(
                 "lower_bound_by_weight": float(
                     ceil(total_weight / max(bt.max_weight for bt in box_types))
                 ),
+                "underweight_boxes": float(
+                    sum(
+                        1
+                        for box in packed_boxes
+                        if box.total_weight < box_type_by_id[box.box_type_id].min_weight
+                    )
+                ),
+            },
+            suggestions=[],
+        )
+
+    def _pack_by_whole_sku_partition(
+        target: int,
+        *,
+        fill_rate: float,
+        max_sku_types: int,
+    ) -> PackingPlan:
+        if target != 2 or not items or len(items) > 16:
+            return PackingPlan(
+                status="infeasible",
+                reason="infeasible: whole-sku partition skipped",
+                boxes=[],
+                metrics={
+                    "total_weight": total_weight,
+                    "box_count": 0.0,
+                    "lower_bound_by_weight": float(
+                        ceil(total_weight / max(bt.max_weight for bt in box_types))
+                    ),
+                },
+                suggestions=[],
+            )
+
+        def _group_stats(group: list[Item]) -> tuple[float, float]:
+            return (
+                sum(item.weight * item.qty for item in group),
+                sum(_volume(item) * item.qty for item in group),
+            )
+
+        def _box_for_group(group: list[Item]) -> Optional[BoxType]:
+            group_weight, group_volume = _group_stats(group)
+            candidates: list[BoxType] = []
+            for bt in box_types:
+                if any(not _fits(item, bt) for item in group):
+                    continue
+                box_volume = bt.inner_L * bt.inner_W * bt.inner_H
+                if group_volume > box_volume * fill_rate:
+                    continue
+                total = group_weight + bt.tare_weight
+                if total > bt.max_weight:
+                    continue
+                if not allow_underweight and total < bt.min_weight:
+                    continue
+                candidates.append(bt)
+            candidates.sort(key=lambda bt: (bt.inner_L * bt.inner_W * bt.inner_H, bt.max_weight))
+            return candidates[0] if candidates else None
+
+        best: tuple[float, list[PackedBox]] | None = None
+        sku_count = len(items)
+        # Complementary masks are equivalent; fix the first SKU in group A.
+        for mask in range(1, 1 << sku_count):
+            if not (mask & 1):
+                continue
+            if mask == (1 << sku_count) - 1:
+                continue
+            group_a = [items[i] for i in range(sku_count) if mask & (1 << i)]
+            group_b = [items[i] for i in range(sku_count) if not (mask & (1 << i))]
+            if len(group_a) > max_sku_types or len(group_b) > max_sku_types:
+                continue
+            box_a = _box_for_group(group_a)
+            if box_a is None:
+                continue
+            box_b = _box_for_group(group_b)
+            if box_b is None:
+                continue
+            weight_a, _volume_a = _group_stats(group_a)
+            weight_b, _volume_b = _group_stats(group_b)
+            packed_boxes = [
+                PackedBox(
+                    box_type_id=box_a.id,
+                    total_weight=weight_a + box_a.tare_weight,
+                    items=[
+                        PackedItem(item_id=item.id, qty=item.qty)
+                        for item in group_a
+                    ],
+                ),
+                PackedBox(
+                    box_type_id=box_b.id,
+                    total_weight=weight_b + box_b.tare_weight,
+                    items=[
+                        PackedItem(item_id=item.id, qty=item.qty)
+                        for item in group_b
+                    ],
+                ),
+            ]
+            score = (
+                abs(packed_boxes[0].total_weight - packed_boxes[1].total_weight)
+                + sum(len(box.items) ** 2 for box in packed_boxes)
+                + sum(
+                    box_type_by_id[box.box_type_id].inner_L
+                    * box_type_by_id[box.box_type_id].inner_W
+                    * box_type_by_id[box.box_type_id].inner_H
+                    for box in packed_boxes
+                )
+                / 1_000_000_000.0
+            )
+            if best is None or score < best[0]:
+                best = (score, packed_boxes)
+
+        if best is None:
+            return PackingPlan(
+                status="infeasible",
+                reason="infeasible: whole-sku partition not found",
+                boxes=[],
+                metrics={
+                    "total_weight": total_weight,
+                    "box_count": 0.0,
+                    "lower_bound_by_weight": float(
+                        ceil(total_weight / max(bt.max_weight for bt in box_types))
+                    ),
+                },
+                suggestions=[],
+            )
+        return PackingPlan(
+            status="ok",
+            reason="",
+            boxes=best[1],
+            metrics={
+                "total_weight": total_weight,
+                "box_count": 2.0,
+                "lower_bound_by_weight": float(
+                    ceil(total_weight / max(bt.max_weight for bt in box_types))
+                ),
+                "underweight_boxes": float(
+                    sum(
+                        1
+                        for box in best[1]
+                        if box.total_weight < box_type_by_id[box.box_type_id].min_weight
+                    )
+                ),
+            },
+            suggestions=[],
+        )
+
+    def _pack_by_limited_sku_search(
+        target: int,
+        *,
+        fill_rate: float,
+        max_sku_types: int,
+    ) -> PackingPlan:
+        if target < 2 or target > 6 or len(items) > 10:
+            return PackingPlan(
+                status="infeasible",
+                reason="infeasible: limited-sku search skipped",
+                boxes=[],
+                metrics={
+                    "total_weight": total_weight,
+                    "box_count": 0.0,
+                    "lower_bound_by_weight": float(
+                        ceil(total_weight / max(bt.max_weight for bt in box_types))
+                    ),
+                },
+                suggestions=[],
+            )
+
+        max_item_capacity = max(bt.max_weight - bt.tare_weight for bt in box_types)
+        max_box_volume = max(
+            bt.inner_L * bt.inner_W * bt.inner_H * fill_rate for bt in box_types
+        )
+
+        def _chunk_weight(item: Item, qty: int) -> float:
+            return item.weight * qty
+
+        def _chunk_volume(item: Item, qty: int) -> float:
+            return _volume(item) * qty
+
+        def _candidate_chunks() -> list[list[tuple[str, int, float, float]]]:
+            base = [
+                (item.id, item.qty, _chunk_weight(item, item.qty), _chunk_volume(item, item.qty))
+                for item in items
+            ]
+            candidates = [base]
+            for split_item in items:
+                if split_item.qty < 10:
+                    continue
+                step = 5 if split_item.qty % 5 == 0 else 1
+                for first_qty in range(step, split_item.qty, step):
+                    second_qty = split_item.qty - first_qty
+                    if second_qty <= 0:
+                        continue
+                    first_weight = _chunk_weight(split_item, first_qty)
+                    second_weight = _chunk_weight(split_item, second_qty)
+                    if first_weight > max_item_capacity or second_weight > max_item_capacity:
+                        continue
+                    chunks = []
+                    for item in items:
+                        if item.id == split_item.id:
+                            chunks.append(
+                                (
+                                    item.id,
+                                    first_qty,
+                                    first_weight,
+                                    _chunk_volume(item, first_qty),
+                                )
+                            )
+                            chunks.append(
+                                (
+                                    item.id,
+                                    second_qty,
+                                    second_weight,
+                                    _chunk_volume(item, second_qty),
+                                )
+                            )
+                        else:
+                            chunks.append(
+                                (
+                                    item.id,
+                                    item.qty,
+                                    _chunk_weight(item, item.qty),
+                                    _chunk_volume(item, item.qty),
+                                )
+                            )
+                    candidates.append(chunks)
+            candidates.sort(key=lambda chunks: (len(chunks), -max(chunk[2] for chunk in chunks)))
+            return candidates
+
+        def _box_for_items(items_map: dict[str, int]) -> Optional[BoxType]:
+            group_weight = sum(items_by_id[item_id].weight * qty for item_id, qty in items_map.items())
+            group_volume = sum(_volume(items_by_id[item_id]) * qty for item_id, qty in items_map.items())
+            candidates: list[BoxType] = []
+            for bt in box_types:
+                if any(not _fits(items_by_id[item_id], bt) for item_id in items_map):
+                    continue
+                box_volume = bt.inner_L * bt.inner_W * bt.inner_H
+                if group_volume > box_volume * fill_rate:
+                    continue
+                total = group_weight + bt.tare_weight
+                if total > bt.max_weight:
+                    continue
+                if not allow_underweight and total < bt.min_weight:
+                    continue
+                candidates.append(bt)
+            candidates.sort(key=lambda bt: (bt.inner_L * bt.inner_W * bt.inner_H, bt.max_weight))
+            return candidates[0] if candidates else None
+
+        best: tuple[tuple[float, ...], list[PackedBox]] | None = None
+        for chunks in _candidate_chunks():
+            ordered = sorted(chunks, key=lambda chunk: (chunk[2], chunk[3]), reverse=True)
+            states = [
+                {
+                    "items": {},
+                    "weight": 0.0,
+                    "volume": 0.0,
+                    "skus": set(),
+                }
+                for _ in range(target)
+            ]
+
+            def _search(index: int) -> None:
+                nonlocal best
+                if index >= len(ordered):
+                    if any(not state["items"] for state in states):
+                        return
+                    packed_boxes: list[PackedBox] = []
+                    box_volume_total = 0.0
+                    weight_balance = 0.0
+                    sku_counts = []
+                    for state in states:
+                        box_type = _box_for_items(state["items"])
+                        if box_type is None:
+                            return
+                        total = state["weight"] + box_type.tare_weight
+                        packed_boxes.append(
+                            PackedBox(
+                                box_type_id=box_type.id,
+                                total_weight=total,
+                                items=[
+                                    PackedItem(item_id=item_id, qty=qty)
+                                    for item_id, qty in sorted(state["items"].items())
+                                ],
+                            )
+                        )
+                        box_volume_total += box_type.inner_L * box_type.inner_W * box_type.inner_H
+                        weight_balance += abs(
+                            max(box_type.min_weight, box_type.max_weight * 0.78) - total
+                        ) / max(box_type.max_weight, 1.0)
+                        sku_counts.append(len(state["items"]))
+                    score = (
+                        float(max(sku_counts)),
+                        float(sum(max(0, count - 1) ** 2 for count in sku_counts)),
+                        weight_balance,
+                        box_volume_total,
+                    )
+                    if best is None or score < best[0]:
+                        best = (score, packed_boxes)
+                    return
+
+                item_id, qty, chunk_weight, chunk_volume = ordered[index]
+                used_empty = False
+                for state in states:
+                    if not state["items"]:
+                        if used_empty:
+                            continue
+                        used_empty = True
+                    is_new_sku = item_id not in state["items"]
+                    if is_new_sku and len(state["items"]) + 1 > max_sku_types:
+                        continue
+                    if state["weight"] + chunk_weight > max_item_capacity:
+                        continue
+                    if state["volume"] + chunk_volume > max_box_volume:
+                        continue
+                    state["items"][item_id] = state["items"].get(item_id, 0) + qty
+                    state["weight"] += chunk_weight
+                    state["volume"] += chunk_volume
+                    _search(index + 1)
+                    state["items"][item_id] -= qty
+                    if state["items"][item_id] <= 0:
+                        del state["items"][item_id]
+                    state["weight"] -= chunk_weight
+                    state["volume"] -= chunk_volume
+
+            _search(0)
+            if best is not None and best[0][0] <= max_sku_types:
+                break
+
+        if best is None:
+            return PackingPlan(
+                status="infeasible",
+                reason="infeasible: limited-sku search not found",
+                boxes=[],
+                metrics={
+                    "total_weight": total_weight,
+                    "box_count": 0.0,
+                    "lower_bound_by_weight": float(
+                        ceil(total_weight / max(bt.max_weight for bt in box_types))
+                    ),
+                },
+                suggestions=[],
+            )
+        return PackingPlan(
+            status="ok",
+            reason="",
+            boxes=best[1],
+            metrics={
+                "total_weight": total_weight,
+                "box_count": float(len(best[1])),
+                "lower_bound_by_weight": float(
+                    ceil(total_weight / max(bt.max_weight for bt in box_types))
+                ),
+                "underweight_boxes": float(
+                    sum(
+                        1
+                        for box in best[1]
+                        if box.total_weight < box_type_by_id[box.box_type_id].min_weight
+                    )
+                ),
             },
             suggestions=[],
         )
 
     best_plan: Optional[PackingPlan] = None
-    best_score: Optional[tuple[float, int, float, float]] = None
+    best_score: Optional[tuple[float, ...]] = None
     best_infeasible: Optional[PackingPlan] = None
+    candidate_count = 0
     b_min = feasibility.b_min
     b_max = feasibility.b_max
     target_slack = b_max - b_min if geometry_check else max_box_slack
+    if allow_underweight:
+        target_slack = min(target_slack, max(max_box_slack, 8))
     targets = target_box_counts(b_min, b_max, target_slack)
     util_tiers = utilization_tiers(utilization_target)
+    fill_tiers = [float(fill_rate)]
+    if allow_underweight:
+        for candidate_fill in (0.95, 1.0):
+            if candidate_fill not in fill_tiers:
+                fill_tiers.append(candidate_fill)
 
     def _record(plan: PackingPlan) -> None:
-        nonlocal best_plan, best_score, best_infeasible
+        nonlocal best_plan, best_score, best_infeasible, candidate_count
         if plan.status != "ok":
             if best_infeasible is None:
                 best_infeasible = plan
             return
+        candidate_count += 1
         candidate = optimize_box_types(
             plan,
             items_by_id=items_by_id,
             box_types=box_types,
             geometry_engine=geometry_engine,
             fill_rate=float(plan.metrics.get("fill_rate", fill_rate)),
+            allow_underweight=allow_underweight,
         )
         candidate = _validate_plan(candidate)
         if candidate.status != "ok":
             if best_infeasible is None or best_infeasible.reason != candidate.reason:
                 best_infeasible = candidate
+            return
+        sku_limit = _plan_sku_limit(candidate)
+        sku_error = _sku_limit_error(candidate, sku_limit)
+        if sku_error is not None:
+            if best_infeasible is None:
+                best_infeasible = sku_error
             return
         quantity_candidate = _validate_plan(
             optimize_quantities(
@@ -923,100 +1399,218 @@ def solve(
                 box_types_by_id=box_type_by_id,
                 geometry_engine=geometry_engine,
                 fill_rate=float(candidate.metrics.get("fill_rate", fill_rate)),
+                allow_underweight=allow_underweight,
+                max_sku_types=sku_limit,
             )
         )
         if quantity_candidate.status == "ok":
             candidate = quantity_candidate
+        sku_error = _sku_limit_error(candidate, sku_limit)
+        if sku_error is not None:
+            if best_infeasible is None:
+                best_infeasible = sku_error
+            return
+        sku_counts = [len(box.items) for box in candidate.boxes]
+        metrics = dict(candidate.metrics)
+        metrics.update(
+            {
+                "underweight_boxes": float(
+                    sum(
+                        1
+                        for box in candidate.boxes
+                        if box.total_weight < box_type_by_id[box.box_type_id].min_weight
+                    )
+                ),
+                "weight_balance_score": float(
+                    sum(
+                        abs(
+                            max(
+                                box_type_by_id[box.box_type_id].min_weight,
+                                box_type_by_id[box.box_type_id].max_weight * 0.78,
+                            )
+                            - box.total_weight
+                        )
+                        / max(box_type_by_id[box.box_type_id].max_weight, 1.0)
+                        for box in candidate.boxes
+                    )
+                ),
+                "geometry_cache_hits": float(geometry_engine.cache_hits),
+                "candidate_count": float(candidate_count),
+                "profile_manual_like": 1.0 if allow_underweight else 0.0,
+                "max_sku_types_cap": float(MAX_SKU_TYPES_CAP),
+                "max_sku_types_in_box": float(max(sku_counts) if sku_counts else 0),
+                "avg_sku_types_per_box": (
+                    float(sum(sku_counts) / len(sku_counts)) if sku_counts else 0.0
+                ),
+                "mixed_box_count": float(sum(1 for count in sku_counts if count > 1)),
+            }
+        )
+        candidate = PackingPlan(
+            status=candidate.status,
+            reason=candidate.reason,
+            boxes=candidate.boxes,
+            metrics=metrics,
+            suggestions=candidate.suggestions,
+        )
         score = _score_plan(candidate, b_min)
         if best_score is None or score < best_score:
             best_score = score
             best_plan = candidate
 
-    # Stage A: SKU-grouped packing (primary).
-    for sku_limit in (max_sku_types, None):
-        for util in util_tiers:
+    # Stage A: SKU-grouped packing with both compact and roomy universal boxes.
+    for strategy_code, prefer_large_group_box in ((1.0, False), (1.1, True)):
+        for sku_limit in _sku_limit_candidates():
+            for util in util_tiers:
+                for effective_fill_rate in fill_tiers:
+                    for target in targets:
+                        metrics_extra = {
+                            "utilization_target": float(util),
+                            "fill_rate": float(effective_fill_rate),
+                            "target_box_count": float(target),
+                            "max_sku_types": float(sku_limit),
+                            "sku_limit_relaxed": (
+                                1.0 if sku_limit > base_max_sku_types else 0.0
+                            ),
+                            "stage": 1.0,
+                            "selected_strategy_code": strategy_code,
+                        }
+                        if sku_limit <= base_max_sku_types:
+                            plan = _pack_by_sku_groups(
+                                target,
+                                fill_rate=effective_fill_rate,
+                                max_sku_types=sku_limit,
+                                prefer_large_box=prefer_large_group_box,
+                            )
+                        else:
+                            plan = _pack_by_sku(
+                                target,
+                                fill_rate=effective_fill_rate,
+                                utilization_target=util,
+                                max_sku_types=sku_limit,
+                            )
+                        plan.metrics.update(metrics_extra)
+                        _record(plan)
+
+    # Stage A.5: small multi-SKU orders can often be split by whole SKU groups
+    # more cleanly than the item-level greedy pass.
+    for sku_limit in _sku_limit_candidates():
+        for effective_fill_rate in fill_tiers:
             for target in targets:
                 metrics_extra = {
-                    "utilization_target": float(util),
-                    "fill_rate": float(fill_rate),
+                    "utilization_target": float(utilization_target),
+                    "fill_rate": float(effective_fill_rate),
                     "target_box_count": float(target),
-                    "max_sku_types": float(sku_limit) if sku_limit is not None else 0.0,
-                    "sku_limit_relaxed": 0.0 if sku_limit is not None else 1.0,
-                    "stage": 1.0,
+                    "max_sku_types": float(sku_limit),
+                    "sku_limit_relaxed": (
+                        1.0 if sku_limit > base_max_sku_types else 0.0
+                    ),
+                    "stage": 1.5,
+                    "selected_strategy_code": 1.5,
                 }
-                if sku_limit is not None:
-                    plan = _pack_by_sku_groups(
-                        target,
-                        fill_rate=fill_rate,
-                        max_sku_types=sku_limit,
-                    )
-                else:
-                    plan = _pack_by_sku(
-                        target,
-                        fill_rate=fill_rate,
-                        utilization_target=util,
-                        max_sku_types=sku_limit,
-                    )
+                plan = _pack_by_whole_sku_partition(
+                    target,
+                    fill_rate=effective_fill_rate,
+                    max_sku_types=sku_limit,
+                )
                 plan.metrics.update(metrics_extra)
                 _record(plan)
 
-    # Stage B: mixed packing fallback if SKU grouping fails.
-    if best_plan is None:
-        for sku_limit in (max_sku_types, None):
+    # Stage A.6: for small multi-SKU orders, try a bounded search that keeps
+    # the box count fixed and minimizes SKU types per box. It may split at most
+    # one SKU, matching common manual packing patterns without making the
+    # general search exponential.
+    for sku_limit in _sku_limit_candidates(include_relaxed=False):
+        for effective_fill_rate in fill_tiers:
+            for target in targets:
+                metrics_extra = {
+                    "utilization_target": float(utilization_target),
+                    "fill_rate": float(effective_fill_rate),
+                    "target_box_count": float(target),
+                    "max_sku_types": float(sku_limit),
+                    "sku_limit_relaxed": 0.0,
+                    "stage": 1.6,
+                    "selected_strategy_code": 1.6,
+                }
+                plan = _pack_by_limited_sku_search(
+                    target,
+                    fill_rate=effective_fill_rate,
+                    max_sku_types=sku_limit,
+                )
+                plan.metrics.update(metrics_extra)
+                _record(plan)
+
+    # Stage B: mixed packing candidates always run; they often rescue geometry
+    # failures or reduce box count compared with strict SKU grouping.
+    for strategy_code, placement_mode, prefer_large_box in (
+        (2.0, "utilization", False),
+        (2.1, "weight", False),
+        (2.2, "utilization", True),
+    ):
+        for sku_limit in _sku_limit_candidates():
             for util in util_tiers:
-                for target in targets:
-                    metrics_extra = {
-                        "utilization_target": float(util),
-                        "fill_rate": float(fill_rate),
-                        "target_box_count": float(target),
-                        "max_sku_types": float(sku_limit) if sku_limit is not None else 0.0,
-                        "sku_limit_relaxed": 0.0 if sku_limit is not None else 1.0,
-                        "stage": 2.0,
-                    }
-                    plan = pack_order(
-                        items,
-                        box_types,
-                        fill_rate=fill_rate,
-                        utilization_target=util,
-                        target_box_count=target,
-                        placement_mode="utilization",
-                        prefer_large_box=False,
-                        max_sku_types=sku_limit,
-                        geometry_check=False,
-                        geometry_visualize_dir=None,
-                        metrics_extra=metrics_extra,
-                    )
-                    _record(plan)
+                for effective_fill_rate in fill_tiers:
+                    for target in targets:
+                        metrics_extra = {
+                            "utilization_target": float(util),
+                            "fill_rate": float(effective_fill_rate),
+                            "target_box_count": float(target),
+                            "max_sku_types": float(sku_limit),
+                            "sku_limit_relaxed": (
+                                1.0 if sku_limit > base_max_sku_types else 0.0
+                            ),
+                            "stage": 2.0,
+                            "selected_strategy_code": strategy_code,
+                        }
+                        plan = pack_order(
+                            items,
+                            box_types,
+                            fill_rate=effective_fill_rate,
+                            utilization_target=util,
+                            target_box_count=target,
+                            placement_mode=placement_mode,
+                            prefer_large_box=prefer_large_box,
+                            max_sku_types=sku_limit,
+                            geometry_check=False,
+                            geometry_visualize_dir=None,
+                            profile=profile,
+                            metrics_extra=metrics_extra,
+                        )
+                        _record(plan)
 
     # Stage C: if still infeasible, allow more boxes (up to b_max) and relax SKU limits.
     if best_plan is None and b_max > 0:
-        expanded_targets = target_box_counts(b_min, b_max, b_max - b_min)
-        relaxed_sku_limits = [max_sku_types + 1, max_sku_types + 2, None]
-        for sku_limit in relaxed_sku_limits:
-            for util in util_tiers:
-                for target in expanded_targets:
-                    metrics_extra = {
-                        "utilization_target": float(util),
-                        "fill_rate": float(fill_rate),
-                        "target_box_count": float(target),
-                        "max_sku_types": float(sku_limit) if sku_limit is not None else 0.0,
-                        "sku_limit_relaxed": 1.0,
-                        "stage": 3.0,
-                    }
-                    plan = pack_order(
-                        items,
-                        box_types,
-                        fill_rate=fill_rate,
-                        utilization_target=util,
-                        target_box_count=target,
-                        placement_mode="utilization",
-                        prefer_large_box=False,
-                        max_sku_types=sku_limit,
-                        geometry_check=False,
-                        geometry_visualize_dir=None,
-                        metrics_extra=metrics_extra,
-                    )
-                    _record(plan)
+        expanded_slack = b_max - b_min
+        if allow_underweight:
+            expanded_slack = min(expanded_slack, max(max_box_slack, 12))
+        expanded_targets = target_box_counts(b_min, b_max, expanded_slack)
+        for util in util_tiers:
+            for sku_limit in _sku_limit_candidates():
+                for effective_fill_rate in fill_tiers:
+                    for target in expanded_targets:
+                        metrics_extra = {
+                            "utilization_target": float(util),
+                            "fill_rate": float(effective_fill_rate),
+                            "target_box_count": float(target),
+                            "max_sku_types": float(sku_limit),
+                            "sku_limit_relaxed": 1.0,
+                            "stage": 3.0,
+                            "selected_strategy_code": 3.0,
+                        }
+                        plan = pack_order(
+                            items,
+                            box_types,
+                            fill_rate=effective_fill_rate,
+                            utilization_target=util,
+                            target_box_count=target,
+                            placement_mode="utilization",
+                            prefer_large_box=False,
+                            max_sku_types=sku_limit,
+                            geometry_check=False,
+                            geometry_visualize_dir=None,
+                            profile=profile,
+                            metrics_extra=metrics_extra,
+                        )
+                        _record(plan)
 
     if best_plan is None:
         return _validate_plan(best_infeasible) if best_infeasible is not None else pack_order(
@@ -1027,7 +1621,8 @@ def solve(
             geometry_check=geometry_check,
             geometry_visualize_dir=geometry_visualize_dir,
             allow_rotation=allow_rotation,
-            max_sku_types=max_sku_types,
+            max_sku_types=MAX_SKU_TYPES_CAP,
+            profile=profile,
         )
     if geometry_visualize_dir:
         return _validate_plan(best_plan, visualize=True)

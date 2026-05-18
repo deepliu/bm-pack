@@ -4,12 +4,12 @@
 一个以“重量合规 + SKU尽量不混装”为核心目标的装箱求解器。
 
 ## 目标与约束
-- 每箱重量必须满足 **12.0 kg ≤ weight ≤ 22.5 kg**（可配置）。
+- 默认 `strict` 模式下每箱重量必须满足 **12.0 kg ≤ weight ≤ 22.5 kg**（可配置）。
+- `manual_like` 模式用于 ERP 已发货手工分箱口径：最低重量是软约束，超重仍是硬约束。
 - 尽量保证同 SKU 装在一起；默认每箱 SKU 种类 ≤ 3，必要时可放宽。
 - 不允许旋转（按固定朝向判断尺寸可放入）。
 - 默认只做快速体积与尺寸过滤；可选 3D 校验。
 - 方案完成后支持箱型替换（更小体积）与数量整形（每箱 SKU qty 尽量为 5/10 的整数倍）。
-- 
 
 ## 输入与输出
 输入格式与输出格式详见 `AGENTS.md` 的定义，保持稳定以便后续发布 PyPI。
@@ -28,12 +28,31 @@ pytest -q
 python -m cartonizer.cli --input examples/order.json
 # 可行性验证
 python -m cartonizer.cli --input examples/bm_data.json --geometry-check --geometry-viz-dir output
+# ERP 手工分箱口径
+python -m cartonizer.cli --input examples/bm_data.json --geometry-check --profile manual_like
 ```
 
 ### CLI 参数说明
 - `--input`: 输入 JSON 路径（必填）。
 - `--geometry-check`: 对每个箱执行 3D 几何校验（需要安装 `py3dbp`）。
 - `--geometry-viz-dir`: 输出几何可视化文件的目录（可选）。
+- `--profile`: `strict` 或 `manual_like`，默认 `strict`。
+
+## ERP 已发货样本导出
+可用只读工具导出 ERP 已发货手工分箱作为回归 fixture：
+
+```powershell
+python tools/export_erp_shipped_cases.py
+```
+
+默认导出已发货手工分箱中的有效回归样本：
+- 手工方案至少 2 箱。
+- 每箱重量不低于 12kg。
+- 每箱 SKU 种类不超过 6。
+- 只读 ERP 数据，不写回业务库。
+
+后续继续优化时，可先阅读：
+`docs/cartonizer_optimization_prompt.md`
 
 ## 打包与发布（PyPI）
 
@@ -65,7 +84,7 @@ python -m twine upload --repository testpypi dist/*
 推导：
 - `B_min = ceil(W / max_weight)`
 - `B_max = floor(W / min_weight)`
-如果 `B_min > B_max`，直接判定 infeasible。
+如果 `B_min > B_max`，`strict` 模式直接判定 infeasible；`manual_like` 模式允许继续搜索并把低重箱记录到 metrics。
 
 ### 2) Stage A：SKU 聚合装箱（主解）
 逐件分配（不旋转），优先保持 SKU 聚合并满足 SKU 种类限制：

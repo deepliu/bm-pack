@@ -14,6 +14,8 @@ wheels/
 debug_run.py
 output/
 examples
+!examples/
+!examples/erp_shipped_manual_cases.json
 output
 *.json
-
+!examples/erp_shipped_manual_cases.json

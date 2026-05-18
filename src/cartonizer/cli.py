@@ -68,6 +68,12 @@ def main() -> int:
         "--geometry-viz-dir",
         help="Output directory for geometry visualization files",
     )
+    parser.add_argument(
+        "--profile",
+        choices=("strict", "manual_like"),
+        default="strict",
+        help="Solving profile. manual_like treats minimum box weight as a soft constraint.",
+    )
     args = parser.parse_args()
     payload = json.loads(Path(args.input).read_text(encoding="utf-8"))
     box_types, items = _parse_input(payload)
@@ -76,6 +82,7 @@ def main() -> int:
         box_types,
         geometry_check=args.geometry_check,
         geometry_visualize_dir=args.geometry_viz_dir,
+        profile=args.profile,
     )
     print(json.dumps(_plan_to_dict(plan), ensure_ascii=False, indent=2))
     return 0
